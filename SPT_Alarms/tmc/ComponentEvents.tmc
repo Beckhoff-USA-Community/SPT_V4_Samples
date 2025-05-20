@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<TcModuleClass>
+	<DataTypes>
+		<DataType>
+			<Name GUID="{CE172E75-709D-4667-96E7-6259DCAB9473}">ComponentEvents</Name>
+			<DisplayName TxtId=""><![CDATA[ComponentEvents_DisplayText]]></DisplayName>
+			<EventId>
+				<Name Id="1">InitReferenceEvent</Name>
+				<DisplayName TxtId=""><![CDATA[EventClass1Event1_DisplayText]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="2">VerboseEvent</Name>
+				<DisplayName TxtId=""><![CDATA[VerboseEvent_DisplayText]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="3">InfoEvent</Name>
+				<DisplayName TxtId=""><![CDATA[InfoEvent_DisplayText]]></DisplayName>
+				<Severity>Info</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="4">WarningEvent</Name>
+				<DisplayName TxtId=""><![CDATA[WarningEvent_DisplayText]]></DisplayName>
+				<Severity>Warning</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="5">ErrorEvent</Name>
+				<DisplayName TxtId=""><![CDATA[ErrorEvent_DisplayText]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="6">CriticalEvent</Name>
+				<DisplayName TxtId=""><![CDATA[CriticalEvent_DisplayText]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="7">AnalogInAlarm</Name>
+				<DisplayName TxtId=""><![CDATA[AnalogInAlarm_DisplayText]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<Hides>
+				<Hide GUID="{9B468DB0-D1B0-4C72-A6D6-EBC34E056908}"/>
+				<Hide GUID="{7653AFD2-A5A9-45C2-A07F-0978C5DF11C0}"/>
+				<Hide GUID="{ADEBBA3C-ED1D-4802-A9B1-54CA7241B75D}"/>
+				<Hide GUID="{B7CD087F-1505-441B-A558-E64D7C6307B3}"/>
+				<Hide GUID="{11BD6FB3-A057-4936-8D32-27FC9B40D68F}"/>
+				<Hide GUID="{041EA162-9C08-49D6-BFE9-F9D17CCD7853}"/>
+				<Hide GUID="{C0FB772F-F1C8-46F0-BA96-D60E02261190}"/>
+				<Hide GUID="{B3ADFA1A-AFD7-4BED-9CA6-04FCDC4EE6D1}"/>
+				<Hide GUID="{EADF5056-F2AC-4916-81F3-02FF627FD012}"/>
+				<Hide GUID="{7BA6B660-B52C-40DA-8218-F2F0A0EEFB56}"/>
+			</Hides>
+		</DataType>
+	</DataTypes>
+</TcModuleClass>

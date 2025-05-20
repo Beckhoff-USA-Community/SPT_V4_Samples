@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="Component" Id="{f68683d6-7a3b-42b2-8aae-82389d3ee52f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Component EXTENDS FB_ComponentBase
+VAR
+	ComponentAlarms : ARRAY[1..COMPONENT_ALARM_COUNT] OF FB_TcAlarm;
+	testCritical	: BOOL;
+	testError		: BOOL;
+	testWarning		: BOOL;
+	testInfo		: BOOL;
+	testVerbose		: BOOL;
+	testAnalog		: BOOL;
+	AnalogIn		: INT;
+END_VAR
+
+VAR CONSTANT
+	COMPONENT_ALARM_COUNT : UDINT := 7; //First is InitReferenceEvent
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="ChangeEventSeverity" Id="{09629aa5-80d9-403d-9577-33b283b0b55a}">
+      <Declaration><![CDATA[METHOD ChangeEventSeverity
+VAR_INPUT
+	AlarmID	 : E_ComponentEvents;
+	Severity : TcEventSeverity;
+END_VAR
+
+VAR
+	localAlarm : TcEventEntry;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[localAlarm			 := TC_EVENTS.ComponentEvents.AnalogInAlarm;
+localAlarm.eSeverity := Severity;
+ComponentAlarms[AlarmID].CreateEx(localAlarm, 0, 0);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CreateEvents" Id="{b63661ac-39bc-48a5-a0dc-7e1dceb7a9cb}">
+      <Declaration><![CDATA[// Initializes event function blocks using this components's name
+METHOD PROTECTED CreateEvents
+
+// This method is called by Initialize() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_CreateAllEventsInClass(Alarms		:= ComponentAlarms,
+						 ClassSize	:= SIZEOF(TC_Events.ComponentEvents),
+						 pInitEvent := ADR(TC_EVENTS.ComponentEvents.InitReferenceEvent),
+						 Prefix		:= Name);
+
+SUPER^.CreateEvents();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{57f3e089-87ec-40e9-8d89-c2565e148729}">
+      <Declaration><![CDATA[// This method serves as the entry point for all underlying FB logic
+METHOD PUBLIC CyclicLogic
+
+// This method should be called cyclically by descendant function blocks by invoking SUPER^.CyclicLogic().  Alternatively, the contents of this method could be reimplemented entirely in which case a call to this method would not be necessary.
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();
+
+(*
+*
+*		Code must be after SUPER^.CyclicLogic();
+*
+*)
+
+// Update alarm severity for this component
+_CurrentAlarmSeverity := F_GetMaxSeverityRaised(Alarms := ComponentAlarms, CurrentSeverity := _CurrentAlarmSeverity);
+_Error				  := _CurrentAlarmSeverity >= TcEventSeverity.Error;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{11e869de-f8c6-4429-bc4c-971153785719}">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := SUPER^.Initialize();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Monitoring" Id="{7c9b6c42-8fe1-4877-98d5-b7e6e33b37fa}">
+      <Declaration><![CDATA[// Provides basic error detection and event handling for this component
+METHOD PROTECTED Monitoring
+
+//This method is called cyclically by CyclicLogic()
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Busy := FALSE;
+
+//AlarmMonitoring
+IF testVerbose AND NOT ComponentAlarms[E_ComponentEvents.VerboseEvent].bRaised THEN
+	RaiseAlarm2Args(ComponentAlarms[E_ComponentEvents.VerboseEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testInfo AND NOT ComponentAlarms[E_ComponentEvents.InfoEvent].bRaised THEN
+	RaiseAlarm2Args(ComponentAlarms[E_ComponentEvents.InfoEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testWarning AND NOT ComponentAlarms[E_ComponentEvents.WarningEvent].bRaised THEN
+	RaiseAlarm2Args(ComponentAlarms[E_ComponentEvents.WarningEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testError AND NOT ComponentAlarms[E_ComponentEvents.ErrorEvent].bRaised THEN
+	RaiseAlarm2Args(ComponentAlarms[E_ComponentEvents.ErrorEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testCritical AND NOT ComponentAlarms[E_ComponentEvents.CriticalEvent].bRaised THEN
+	RaiseAlarm2Args(ComponentAlarms[E_ComponentEvents.CriticalEvent], 'Note 1', 'Note 2');
+END_IF
+
+//Analog Input with Changing Event Severities
+IF testAnalog AND NOT ComponentAlarms[E_ComponentEvents.AnalogInAlarm].bRaised THEN
+	CASE AnalogIn OF
+		0..10:
+			ChangeEventSeverity(E_ComponentEvents.AnalogInAlarm, TcEventSeverity.Critical);
+
+		11..100:
+			ChangeEventSeverity(E_ComponentEvents.AnalogInAlarm, TcEventSeverity.Warning);
+
+		101..999:
+			ChangeEventSeverity(E_ComponentEvents.AnalogInAlarm, TcEventSeverity.Info);
+
+		1000..1100:
+			ChangeEventSeverity(E_ComponentEvents.AnalogInAlarm, TcEventSeverity.Warning);
+
+		1101..1201:
+			ChangeEventSeverity(E_ComponentEvents.AnalogInAlarm, TcEventSeverity.Critical);
+	END_CASE
+
+	RaiseAlarm2Args(ComponentAlarms[E_ComponentEvents.AnalogInAlarm], 'Analong Input:', TO_STRING(AnalogIn));
+ELSIF NOT testAnalog AND_THEN ComponentAlarms[E_ComponentEvents.AnalogInAlarm].bRaised THEN
+	ComponentAlarms[E_ComponentEvents.AnalogInAlarm].Clear(0, 0);
+END_IF
+
+SUPER^.Monitoring();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RaiseAlarm2Args" Id="{741dfd78-f38e-446f-bb3c-e2492225744e}">
+      <Declaration><![CDATA[METHOD RaiseAlarm2Args
+VAR_IN_OUT
+	Alarm : FB_TcAlarm; //Alarm to be raised
+END_VAR
+
+VAR_INPUT
+	String_1 : STRING; //First String Parameter (The Name of this component will be applied first automatically)
+	String_2 : STRING; //Second String Parameter
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_RaiseAlarmWithStringParameters(Alarm	  := Alarm,
+								 String_1 := Name,
+								 String_2 := String_1,
+								 String_3 := String_2);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{6737e5cc-5e58-4d89-aac0-5f2239d825cd}">
+      <Declaration><![CDATA[// Clears error flags and error IDs for this component
+METHOD PUBLIC Reset : BOOL
+
+//Typically called by the EMs SUPER^.Clearing Method]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_ClearAllEventsInClass(Alarms := ComponentAlarms);
+IF SUPER^.Reset() THEN
+	_Error	 := FALSE;
+	_ErrorID := 0;
+	Reset	 := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

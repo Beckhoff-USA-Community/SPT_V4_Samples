@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="EquipmentModuleWithSubModule" Id="{b852676d-4284-4c69-95b5-ce6f8883565c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK EquipmentModuleWithSubModule EXTENDS FB_PackML_BaseModule
+VAR
+	//SubModule
+	SubModule : EquipmentModule := (Name := 'SubModule of Equip Two');
+
+	//Component
+	ComponentOne	: Component := (Name := 'Component of EM with Sub');
+	EquipmentAlarms : ARRAY[1..EQUIPMENT_ALARM_COUNT] OF FB_TcAlarm;
+	testCritical	: BOOL;
+	testError		: BOOL;
+	testWarning		: BOOL;
+	testInfo		: BOOL;
+	testVerbose		: BOOL;
+END_VAR
+
+VAR CONSTANT
+	EQUIPMENT_ALARM_COUNT : UDINT := 6; //First is InitReferenceEvent
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Clearing" Id="{41a0aec4-ba41-46a5-9208-224d1416f190}">
+      <Declaration><![CDATA[METHOD PROTECTED Clearing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_ClearAllEventsInClass(Alarms := EquipmentAlarms);
+SUPER^.Clearing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CreateEvents" Id="{ed26f53a-e5fe-4ac1-940a-f91676605de2}">
+      <Declaration><![CDATA[// Initializes event function blocks using this module's name
+METHOD PROTECTED CreateEvents
+
+// This method is called by Initialize() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_CreateAllEventsInClass(Alarms		:= EquipmentAlarms,
+						 ClassSize	:= SIZEOF(TC_Events.EquipmentModuleEvents),
+						 pInitEvent := ADR(TC_EVENTS.EquipmentModuleEvents.InitReferenceEvent),
+						 Prefix		:= Name);
+
+SUPER^.CreateEvents();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{c8a001b8-1229-472e-b0dd-82db4bbdeb94}">
+      <Declaration><![CDATA[// This method serves as the entry point for all underlying FB logic
+METHOD PUBLIC CyclicLogic
+
+// This method should be called cyclically by descendant function blocks by invoking SUPER^.CyclicLogic().  Alternatively, the contents of this method could be reimplemented entirely in which case a call to this method would not be necessary.]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+// AlarmHandling
+IF testVerbose AND NOT EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent].bRaised THEN
+	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testInfo AND NOT EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent].bRaised THEN
+	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testWarning AND NOT EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent].bRaised THEN
+	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testError AND NOT EquipmentAlarms[E_EquipmentModuleEvents.ErrorEvent].bRaised THEN
+	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.ErrorEvent], 'Note 1', 'Note 2');
+END_IF
+
+IF testCritical AND NOT EquipmentAlarms[E_EquipmentModuleEvents.CriticalEvent].bRaised THEN
+	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.CriticalEvent], 'Note 1', 'Note 2');
+END_IF
+
+SUPER^.CyclicLogic();
+
+(*
+*
+*		Code must be after SUPER^.CyclicLogic();
+*
+*)
+
+// Update alarm severity from this module
+_CurrentAlarmSeverity := F_GetMaxSeverityRaised(Alarms := EquipmentAlarms, CurrentSeverity := _CurrentAlarmSeverity);
+_Error				  := _CurrentAlarmSeverity >= TcEventSeverity.Error;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{1e4ff0b9-cf84-4ac9-b5e2-cdad958f008b}">
+      <Declaration><![CDATA[// Basic module initialization logic
+METHOD PROTECTED Initialize : BOOL;
+
+// This method is called by CyclicLogic() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		LogModeChanges	:= FALSE;
+		LogStateChanges := FALSE;
+
+		//Register Submodules
+
+		//Register Components
+		RegisterSubmodule(SubModule := SubModule);
+		RegisterComponent(Component := ComponentOne);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			Initialize := TRUE;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RaiseAlarm2Args" Id="{4216941c-b743-4ec2-a005-6191ad9c7534}">
+      <Declaration><![CDATA[METHOD RaiseAlarm2Args
+VAR_IN_OUT
+	Alarm : FB_TcAlarm; //Alarm to be raised
+END_VAR
+
+VAR_INPUT
+	String_1 : STRING; //First String Parameter (The Name of this component will be applied first automatically)
+	String_2 : STRING; //Second String Parameter
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_RaiseAlarmWithStringParameters(Alarm	  := Alarm,
+								 String_1 := Name,
+								 String_2 := String_1,
+								 String_3 := String_2);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

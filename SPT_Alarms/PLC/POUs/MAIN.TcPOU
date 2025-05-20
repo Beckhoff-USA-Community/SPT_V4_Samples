@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{31f179cd-be00-4b82-98cc-4c2f9f86690d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.
+
+(*
+This sample demonstrates a way to implement alarms for modules and components.
+As an incorrect implementation can lead to an endless loop of Raise/CLear it is important to understand when to clear alarms.
+One of the most important details is that the _CurrentAlarmSeverity for a Component/Module must be set locally after the call to SUPER^.CyclicLogic.
+This is due to the fact that _CurrentAlarmSeverity is reset to Verbose in the base class.
+ 
+
+Component
+	The Component includes a Monitoring method which is called by the Cyclic Logic of the base class.
+	This method includes a test variable for each of the Severity levels (Verbose, Info, Warning, Error, and Critical) 
+	The default severities are set in the Base Class.
+
+	Additionally, an example for changing the severity at run time is given which changes the severity based on the value of an pressumed Analog Input.
+
+	Each of these Component Alarms are only cleared when the Module containing the component calls its SUPER^.Clearing()
+ 
+Equipment Module
+	The EM CyclicLogic method has code to monitor possible alarm conditions. 
+	The EM does not have a Monitoring method in the base class, you can add your own and call it from CyclicLogic().
+	Take note that the first 3 alarms (Verbose, Info, Warning) reset themselves once the condition is FALSE, 
+	while the Error and Critical alarms are required to be reset from SUPER^.Clearing().
+
+Machine Module
+	 Most of the implementation for Alarms in the Machine module are the same as the Equipment Module.
+	 The 2 differences are the implementation of a MachineMonitor, which provides similar functionality to the SubModuleMonitor method, 
+	 and the way in which the Clearing method is implemented.
+	 
+	The MachineMonitor method is called by CyclicLogic() and is a simplified version of the SubModuleMonitor in the base class,
+	the SubModuleMonitor requires a FOR loop to process all of the SubModules, and this is removed from the MachineMonitor.
+	
+	The Clearing method is based on the one from the base class, but with the addition of a check for any Components of the Machine Module.
+	More information is provided in the code.
+
+*)
+
+//This is for debug only and should be removed
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
