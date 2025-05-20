@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{ceb8b122-bb7a-46f4-b2a3-e5832746f340}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+	The default reset for the FB_ComponentAxis is a CoE Reset which works on most Beckhoff drives.
+	However, some drives like the AX5000 use SoE instead of CoE.
+	The difference in hardware requires a different set of commands to be sent in order to preform a reset.
+	Specificlly the SoE drives need to toggle IDN-99
+	FB_ResetRoutine_SoEDrive and FB_ResetRoutine_CoEDrive are both defined within the SPT_MotionControl library.
+	By default an instance of FB_ResetRoutine_CoEDrive is passed into the Property ResetMethod during Initialization
+	In order to change this decalre an instance of FB_ResetRoutine_SoEDrive and pass the instance to 
+	Axis.ResetMethod.
+	Because the property accepts the I_MotionSequence interface and the FB_ResetRoutine_SoEDrive implements this interface,
+	we can pass an instance of FB_ResetRoutine_SoEDrive to the property. This is known as the strategy pattern, and it is also used 
+	for the HomeMoethod and the ExternalSequence method.
+	
+	In this project open the Machine Module to see the declarations, and the Initialize method to see the assignment of the ResetMethod property.
+
+*)
+
+//This is for debug only and should be removed
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
