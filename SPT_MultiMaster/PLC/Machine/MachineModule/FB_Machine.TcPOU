@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_Machine" Id="{7ccbae2a-e009-4d31-97d8-45ba313d1efb}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'no_explicit_call' := 'This FB is a CLASS and must be accessed using methods or properties'}
+FUNCTION_BLOCK FB_Machine EXTENDS FB_PackML_BaseModule
+VAR
+	MainDrive : FB_MainDrive := (Name := 'Main Drive');
+	Station1  : FB_Station1	 := (Name := 'Fixed Gear Ratio');
+	Station2  : FB_Station2	 := (Name := 'Variable Gear Ratio');
+	Station3  : FB_Station3	 := (Name := 'Cam Table');
+	Station4  : FB_Station4	 := (Name := '2nd Master for Offset');
+	Station5  : FB_Station5	 := (Name := '2nd Master for Offset and Cam Table');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+
+	Each station has a property that needs a Reference to the MachineVirtualAxis of the Main Drive.
+	This is set in the Initialze method.
+
+*)]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{243aa44f-5b59-43fe-961c-216678001f0f}" />
+    <Folder Name="I_CyclicFB" Id="{6a1813a5-f912-485a-9812-68298154a2b5}" />
+    <Folder Name="Methods" Id="{7cdaae5f-2e47-4129-abbd-34b783737b85}" />
+    <Method Name="CyclicLogic" Id="{9a9f240b-221f-47fa-a970-907ec2352590}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{66a5f9b1-ee74-45a2-9417-38669637e9b8}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Execute]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				(* 
+					When all EMs are in Execute the MM will change states to Execute, then the command to start the Main Drive will be given
+	 				This ensures that all axes are in positin and coupled before starting the Main Drive
+				*)
+				MainDrive.StartCommand := TRUE;
+				SequenceState		   := SequenceState + 10;
+
+			10:
+				MainDrive.StartCommand := FALSE;
+		END_CASE
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HMIPermissions" Id="{01f1aea6-e802-48f8-abd4-50a2a3d31fba}" FolderPath="Methods\">
+      <Declaration><![CDATA[METHOD PROTECTED HMIPermissions]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		AllowHMIControl(ThisModuleOnly := TRUE);
+
+	E_PMLUnitMode.Maintenance:
+		AllowHMIControl(ThisModuleOnly := FALSE);
+
+	E_PMLUnitMode.Manual:
+		AllowHMIControl(ThisModuleOnly := FALSE);
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{3f645d02-cd27-40f5-90c3-06dbc8afab9e}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterSubmodule(SubModule := MainDrive);
+		RegisterSubmodule(SubModule := Station1);
+		RegisterSubmodule(SubModule := Station2);
+		RegisterSubmodule(SubModule := Station3);
+		RegisterSubmodule(SubModule := Station4);
+		RegisterSubmodule(SubModule := Station5);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		// Each station has a property that needs a Reference to the MachineVirtualAxis of the Main Drive.
+		Station1.MasterAxisRef	REF= MainDrive.AxisRef;
+		Station2.MasterAxisRef	REF= MainDrive.AxisRef;
+		Station3.MasterAxisRef	REF= MainDrive.AxisRef;
+		Station4.MasterAxisRef	REF= MainDrive.AxisRef;
+		Station5.MasterAxisRef	REF= MainDrive.AxisRef;
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	20:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

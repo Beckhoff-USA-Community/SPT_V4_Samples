@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_Station4" Id="{385868b0-e0df-4481-b79c-b9d6f1ed6542}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Station4 EXTENDS FB_PackML_BaseModule
+VAR
+	VirtualOffsetMasterAxis : FB_Component_BasicAxis	  := (Name := 'Station 4 Virtual Offset Master Axis');
+	OffsetAxis				: FB_Component_BasicSlaveAxis := (Name := 'Station 4 Offset Axis');
+	_MasterRef				: REFERENCE TO AXIS_REF;
+	V_OffsetFWD				: BOOL;
+	V_OffsetREV				: BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+	Components:
+		VirtualOffsetMasterAxis - Local virtual axis used to apply an offset to the real axis position
+		OffsetAxis - geared to the MachineVirtualAxis and the VirtualOffsetMasterAxis, and will follow commands from both.
+
+	Methods:
+		CyclicLogic - 
+			Monitors the HMI variables to move the VirtualOffsetMasterAxis +/- 100
+
+		Initialize - 
+			Set the Component Master1 axis Ref to the Property backer variable for _MasterAxisRef after the component is initialized
+			Set the Component Master2 axis Ref to the VirtualOffsetMasterAxis.Axis after the component is initialized
+	
+		Starting - 
+			Couples the OffsetAxis to both master axes		
+
+*)]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{87f1d3f8-223b-43f6-83c4-c0ee22478c80}" />
+    <Folder Name="I_CyclicFB" Id="{360a6a91-d5ef-4b7d-a9e4-792492e0e22b}" />
+    <Folder Name="Properties" Id="{98412469-6195-4f5b-9aae-278e29372a9f}" />
+    <Method Name="Aborting" Id="{2217703c-e267-4a33-a7f4-e5a72a736c39}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Aborting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Mode is ignored
+CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF VirtualOffsetMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Stop Axis - Will also Gear Out
+		IF OffsetAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		IF VirtualOffsetMasterAxis.Stopped AND OffsetAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40: // Disable Axis 
+		IF VirtualOffsetMasterAxis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50: // Disable Axis
+		IF OffsetAxis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	60:
+		IF NOT VirtualOffsetMasterAxis.Enabled AND NOT OffsetAxis.Enabled THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	70:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Aborting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Completing" Id="{a8d167bd-0002-4185-bc24-de95d40b4a9f}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Completing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis
+		IF VirtualOffsetMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Wait for Master Axis to Stop
+		IF OffsetAxis.InGear AND OffsetAxis.Stopped THEN
+			IF OffsetAxis.Stop() THEN // Also causes Gear Out to happen
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSIF NOT OffsetAxis.InGear THEN
+			IF OffsetAxis.Stop() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		END_IF
+
+	30:
+		IF VirtualOffsetMasterAxis.Stopped AND OffsetAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Completing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{fcac7400-4f95-4574-b466-8a4dc3654746}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+// Move commands from Visu
+IF V_OffsetFWD THEN
+	VirtualOffsetMasterAxis.MoveRelative(100, 0);
+END_IF
+
+IF V_OffsetREV THEN
+	VirtualOffsetMasterAxis.MoveRelative(-100, 0);
+END_IF
+
+//
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{d0bc36b8-6b39-4a22-961f-7a13544f2eb4}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(VirtualOffsetMasterAxis);
+		RegisterComponent(OffsetAxis);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			// Setting the Reference of the FB_Component_BasicSlaveAxis must be done after the component has been initialized
+			IF __ISVALIDREF(_MasterRef) THEN
+				OffsetAxis.Master1		REF= _MasterRef;
+				OffsetAxis.Master2		REF= VirtualOffsetMasterAxis.Axis;
+				DescendantSequenceState := DescendantSequenceState + 10;
+			END_IF
+		END_IF
+
+	20:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="MasterAxisRef" Id="{23b7437b-ea39-4f11-92b1-1dbf3f795acd}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY MasterAxisRef : REFERENCE TO AXIS_REF]]></Declaration>
+      <Set Name="Set" Id="{dd6e80ec-d467-4caf-b076-ac62c56c6c48}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_MasterRef REF= MasterAxisRef;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="Starting" Id="{914a1811-9f4d-40bd-944a-fa8563be9233}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Starting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CommandedMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10: // Enable Axis 
+				IF VirtualOffsetMasterAxis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF VirtualOffsetMasterAxis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30: // Not required, but in this sample all axes start a 0
+				IF VirtualOffsetMasterAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			40:
+				IF NOT VirtualOffsetMasterAxis.Busy THEN
+					IF NOT VirtualOffsetMasterAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			50: // Enable Axis
+				IF OffsetAxis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			60:
+				IF OffsetAxis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			70: // Not required, but in this sample all axes start a 0
+				IF OffsetAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			80:
+				IF NOT OffsetAxis.Busy THEN
+					IF NOT OffsetAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			90: // Verify the Master axis is ready
+				IF OffsetAxis.Master1.Status.Operational THEN
+					IF (OffsetAxis.Master1.NcToPlc.ActPos = 0.0) THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			100: // Couple to both Master axes 
+				IF OffsetAxis.GearIn() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			110:
+				IF OffsetAxis.InGear THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			120:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Starting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stopping" Id="{8418b550-0145-46b0-bfa1-c51466bd47a9}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Stopping]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF VirtualOffsetMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Wait for Master Axis to Stop
+		IF OffsetAxis.InGear AND OffsetAxis.Stopped THEN
+			IF OffsetAxis.Stop() THEN // Also causes Gear Out to happen
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSIF NOT OffsetAxis.InGear THEN
+			IF OffsetAxis.Stop() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		END_IF
+
+	30:
+		IF VirtualOffsetMasterAxis.Stopped AND OffsetAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Stopping();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

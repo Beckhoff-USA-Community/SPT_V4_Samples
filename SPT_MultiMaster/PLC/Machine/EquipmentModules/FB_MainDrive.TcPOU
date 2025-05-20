@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_MainDrive" Id="{26d642ce-310a-47dd-8933-8cfb4c97a9f3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MainDrive EXTENDS FB_PackML_BaseModule
+VAR
+	MachineVirtualAxis : FB_Component_BasicAxis := (Name := 'Machine Virtual Axis');
+	_StartCommand	   : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+	Components:
+		MachineVirtualAxis - will serve as the Master axis for all station axes to follow.
+	
+	Methods:
+		Execute - Provides a reversing sequece from 0 to 1080 for the MachineVirtualAxis
+			1080 is used because it is evenly divisible by 360, which is used as the rollover for the Cam table master position.
+		Initialize - Sets MachineVirtualAxis velocity to 100, can be later adjusted by Visu
+
+*)]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{004a1006-4873-487e-93c3-689cd8311cc8}" />
+    <Folder Name="I_CyclicFB" Id="{a50c8a49-2de4-4edf-8a69-e10f4a0c9989}" />
+    <Folder Name="Properties" Id="{265a5a8c-58e7-4d88-9896-20d486513f6e}" />
+    <Method Name="Aborting" Id="{0ab2a755-f479-4155-bea8-7b1b108018b5}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Aborting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Mode is ignored
+CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF MachineVirtualAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20:
+		IF MachineVirtualAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30: // Disable Axis
+		IF MachineVirtualAxis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		IF NOT MachineVirtualAxis.Enabled THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Aborting();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="AxisRef" Id="{8fbb3c08-11e6-42e9-be14-c11d172359bb}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AxisRef : REFERENCE TO AXIS_REF]]></Declaration>
+      <Get Name="Get" Id="{2a15330a-5ee0-4def-aebb-a9f06cee8655}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AxisRef REF= MachineVirtualAxis.Axis;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Completing" Id="{3ff898da-49a5-42a9-84dc-dd8eaed69c93}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Completing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10: // Stop Axis
+				IF MachineVirtualAxis.Stop() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF MachineVirtualAxis.Stopped THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Completing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{a1a2772c-8368-4ad4-be4d-59f3b554e9bb}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{1ac45e52-aa32-4c3f-a0e7-4a776062064b}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Execute
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0: // Wait for command from Machine Module
+				IF _StartCommand THEN
+					_StartCommand := FALSE;
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			10: // Steps 10 - 40 provide a reversing sequence for the MachineVirtualAxis
+				IF MachineVirtualAxis.MoveAbsolute(1_080, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF NOT MachineVirtualAxis.Busy THEN
+					IF NOT MachineVirtualAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			30:
+				IF MachineVirtualAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			40:
+				IF NOT MachineVirtualAxis.Busy THEN
+					IF NOT MachineVirtualAxis.Error THEN
+						SequenceState := 10;
+					END_IF
+				END_IF
+		END_CASE
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{1518c982-262e-48dc-96c1-bd1cb5c09ade}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(Component := MachineVirtualAxis);
+		MachineVirtualAxis.Velocity := 100.0;
+		DescendantSequenceState		:= DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	20:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="StartCommand" Id="{e728752b-e06b-4fa7-8565-d00aeba51719}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY StartCommand : BOOL]]></Declaration>
+      <Set Name="Set" Id="{b6cf63c7-9a8e-4160-8bc1-1e62c074760d}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_StartCommand := StartCommand;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="Starting" Id="{d700bbd5-4ebd-42aa-9db1-b591835e231d}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Starting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CommandedMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10:
+				IF MachineVirtualAxis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF MachineVirtualAxis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30: // Not required, but 0 is a good place to start from for sample code
+				IF MachineVirtualAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			40:
+				IF NOT MachineVirtualAxis.Busy THEN
+					IF NOT MachineVirtualAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			50:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Starting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stopping" Id="{1d286d67-4c20-4caf-b756-9a8f72182cf7}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Stopping]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10:
+				IF MachineVirtualAxis.Stop() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF MachineVirtualAxis.Stopped THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Stopping();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

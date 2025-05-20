@@ -1,0 +1,419 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_Station5" Id="{26b1d8bf-573e-4474-9908-1cb3f660443a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Station5 EXTENDS FB_PackML_BaseModule
+VAR
+	VirtualOffsetMasterAxis : FB_Component_BasicAxis	  := (Name := 'Station 5 Virtual Offset Master Axis');
+	VirtualCammedMasterAxis : FB_Component_CamSlaveAxis	  := (Name := 'Station 5 Virtual Cam Axis');
+	CammedOffsetAxis		: FB_Component_BasicSlaveAxis := (Name := 'Station 5 Cammed Offset Axis');
+	_MasterRef				: REFERENCE TO AXIS_REF;
+	CamParameters			: ST_CamParameters;
+	V_OffsetFWD				: BOOL;
+	V_OffsetREV				: BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+	Design Considerations:
+		Why use a Virtual Axis?
+			Software/Virtual axes can be easily managed from within TwinCAT PLC and NC. 
+			Notably the encoder value can be changed without physical movement and with no impact to real hardware.
+			Therefore, it is possible to set position on a virtual axis to a specific value without physical movement an with no impact to the coupled axis.
+
+			When using a Virtual axis for a Cam table, the real axis can be decoupled, 
+			then the virtual cam table slave can be adjusted as needed, and then the real axis can couple to the virtual axis.
+						
+			Additionally, if more than one real axis needs to follow the Cam table, they can each be coupled to the Virtual axes, and then the Virtual axes is the only one that requires Camming.
+			
+	Components:
+		VirtualOffsetMasterAxis - Local virtual axis used to apply an offset to the real axis position
+		VirtualCammedMasterAxis - follows the cam table with the MachineVirtualAxis as the master axis of the table.
+			The Cam table is a move from 0 - 100
+		CammedOffsetAxis - geared to the VirtualCammedMasterAxis and the VirtualCammedMasterAxis, and will follow commands from both.
+
+	Methods:
+		CyclicLogic - 
+			Monitors the HMI variables to move the VirtualOffsetMasterAxis +/- 100
+			
+		Initialize - 
+			Create the Cam table data and set the Component (VirtualCammedMasterAxis) CamParameters Ref to the data after the component is initialized
+			Set the Component (VirtualCammedMasterAxis) Master axis Ref to the Property backer variable for _MasterAxisRef after the component is initialized
+			Set the Component (CammedOffsetAxis) Master1 axis Ref to the Component (VirtualCammedMasterAxis) Axis property after the component is initialized
+			Set the Component (CammedOffsetAxis) Master2 axis Ref to the Component (VirtualOffsetMasterAxis) Axis property after the component is initialized
+	
+	
+		Starting - 
+			Calls StartSync method of VirtualCammedMasterAxis to cam axis to table
+			Couples the CammedOffsetAxis to both master axes		
+			
+*)
+
+]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{33bd8a36-e5b1-4365-a662-b02628e2a824}" />
+    <Folder Name="I_CyclicFB" Id="{2980bb69-ab02-4bfb-ad1c-9fa03d9a2716}" />
+    <Folder Name="Methods" Id="{3c4bbf80-232f-47ea-b70f-1909e0d359ef}" />
+    <Folder Name="Properties" Id="{256e166a-44bc-4ff6-9c38-8298e3837af6}" />
+    <Method Name="Aborting" Id="{19f60301-d4a8-4792-8221-bddbaf6a02dc}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Aborting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Mode is ignored
+CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF VirtualOffsetMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Stop Axis - Will also Gear Out
+		IF VirtualCammedMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30: // Stop Axis - Will also Gear Out
+		IF CammedOffsetAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		IF VirtualOffsetMasterAxis.Stopped AND VirtualCammedMasterAxis.Stopped AND CammedOffsetAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50: // Disable Axis 
+		IF VirtualOffsetMasterAxis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	60: // Disable Axis
+		IF VirtualCammedMasterAxis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	70: // Disable Axis
+		IF CammedOffsetAxis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	80:
+		IF NOT VirtualOffsetMasterAxis.Enabled AND NOT VirtualCammedMasterAxis.Enabled AND NOT CammedOffsetAxis.Enabled THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	90:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Aborting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Completing" Id="{69befc6a-34d8-463e-ac5c-da3822eced32}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Completing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF VirtualOffsetMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Wait for Master Axis to Stop
+		IF VirtualCammedMasterAxis.InSync AND VirtualCammedMasterAxis.Stopped THEN
+			IF VirtualCammedMasterAxis.Stop() THEN // Also causes Gear Out to happen
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSIF NOT VirtualCammedMasterAxis.InSync THEN
+			IF VirtualCammedMasterAxis.Stop() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		END_IF
+
+	30: // Wait for Master Axis to Stop
+		IF CammedOffsetAxis.InGear AND CammedOffsetAxis.Stopped THEN
+			IF CammedOffsetAxis.Stop() THEN // Also causes Gear Out to happen
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSIF NOT CammedOffsetAxis.InGear THEN
+			IF CammedOffsetAxis.Stop() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		END_IF
+
+	40:
+		IF VirtualOffsetMasterAxis.Stopped AND VirtualCammedMasterAxis.Stopped AND CammedOffsetAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Completing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{02ff2b48-1baf-493b-bd66-c94f3e23bfb8}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+// Move commands from Visu
+IF V_OffsetFWD THEN
+	VirtualOffsetMasterAxis.MoveRelative(100, 0);
+END_IF
+
+IF V_OffsetREV THEN
+	VirtualOffsetMasterAxis.MoveRelative(-100, 0);
+END_IF
+
+//
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{9402b14e-f209-4168-b1e3-2b85ca890ad5}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(VirtualOffsetMasterAxis);
+		RegisterComponent(VirtualCammedMasterAxis);
+		RegisterComponent(CammedOffsetAxis);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			// Create the Cam table data and set the Component (VirtualCammedMasterAxis) CamParameters Ref to the data after the component is initialized
+			WriteCamParameters();
+			VirtualCammedMasterAxis.CamParameters REF= CamParameters;
+
+			// Setting the Reference of the FB_Component_CamSlaveAxis must be done after the component has been initialized
+			IF __ISVALIDREF(_MasterRef) THEN
+				VirtualCammedMasterAxis.Master REF= _MasterRef;
+			END_IF
+
+			// Setting the Reference of the FB_Component_BasicSlaveAxis must be done after the component has been initialized
+			CammedOffsetAxis.Master1 REF= VirtualCammedMasterAxis.Axis;
+			CammedOffsetAxis.Master2 REF= VirtualOffsetMasterAxis.Axis;
+
+			//
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	20:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="MasterAxisRef" Id="{27d2aaee-04b1-4a43-af5b-2a694b8e7aee}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY MasterAxisRef : REFERENCE TO AXIS_REF]]></Declaration>
+      <Set Name="Set" Id="{4cf51866-b61c-4187-b337-138cbd2df373}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_MasterRef REF= MasterAxisRef;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="Starting" Id="{62bd265c-6ee7-4c9c-860a-ad4e286fb110}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Starting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CommandedMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10: // Enable Axis
+				IF VirtualCammedMasterAxis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF VirtualCammedMasterAxis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30: // Not required, but in this sample all axes start a 0
+				IF VirtualCammedMasterAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			40:
+				IF NOT VirtualCammedMasterAxis.Busy THEN
+					IF NOT VirtualCammedMasterAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			50: // Enable Axis 
+				IF VirtualOffsetMasterAxis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			60:
+				IF VirtualOffsetMasterAxis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			70: // Not required, but in this sample all axes start a 0
+				IF VirtualOffsetMasterAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			80:
+				IF NOT VirtualOffsetMasterAxis.Busy THEN
+					IF NOT VirtualOffsetMasterAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			90: // Verify the Master axis is ready
+				IF VirtualCammedMasterAxis.Master.Status.Operational THEN
+					IF VirtualCammedMasterAxis.Master.NcToPlc.ActPos = 0.0 THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			100: // Couple to Cam table with Master axis
+				IF VirtualCammedMasterAxis.StartSync() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			110:
+				IF VirtualCammedMasterAxis.InSync THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			120: // Enable Axis 
+				IF CammedOffsetAxis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			130:
+				IF CammedOffsetAxis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			140: // Not required, but in this sample all axes start a 0
+				IF CammedOffsetAxis.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			150:
+				IF NOT CammedOffsetAxis.Busy THEN
+					IF NOT CammedOffsetAxis.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			160: // Verify the Master axis is ready 
+				IF CammedOffsetAxis.Master1.Status.Operational THEN
+					// A small tolerance of position is used becaused the Axis moves by a small amount when cammed in 
+					IF CammedOffsetAxis.Master1.NcToPlc.ActPos <= 0.01 AND CammedOffsetAxis.Master1.NcToPlc.ActPos >= -0.01 THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			170: // Couple to Master axis 
+				IF CammedOffsetAxis.GearIn() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			180:
+				IF CammedOffsetAxis.InGear THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			190:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Starting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stopping" Id="{87f49bba-e9a6-4150-ad57-c615728b1634}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Stopping]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF VirtualOffsetMasterAxis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Wait for Master Axis to Stop
+		IF VirtualCammedMasterAxis.InSync AND VirtualCammedMasterAxis.Stopped THEN
+			IF VirtualCammedMasterAxis.Stop() THEN // Also causes Gear Out to happen
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSIF NOT VirtualCammedMasterAxis.InSync THEN
+			IF VirtualCammedMasterAxis.Stop() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		END_IF
+
+	30: // Wait for Master Axis to Stop
+		IF CammedOffsetAxis.InGear AND CammedOffsetAxis.Stopped THEN
+			IF CammedOffsetAxis.Stop() THEN // Also causes Gear Out to happen
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSIF NOT CammedOffsetAxis.InGear THEN
+			IF CammedOffsetAxis.Stop() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		END_IF
+
+	40:
+		IF VirtualOffsetMasterAxis.Stopped AND VirtualCammedMasterAxis.Stopped AND CammedOffsetAxis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Stopping();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteCamParameters" Id="{a73be485-93b9-4d7c-9010-73a79c5946b4}" FolderPath="Methods\">
+      <Declaration><![CDATA[METHOD WriteCamParameters]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CamParameters.CamTableId := VirtualCammedMasterAxis.Axis.NcToPlc.AxisId;
+
+// Table 1
+CamParameters.CamTable[1].NumberOfPoints			  := 3;
+CamParameters.CamTable[1].Points[1].PointIndex		  := 1;
+CamParameters.CamTable[1].Points[1].FunctionType	  := MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[1].Points[1].PointType		  := MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[1].Points[1].RelIndexNextPoint := 1;
+CamParameters.CamTable[1].Points[1].MasterPos		  := 0.0;
+CamParameters.CamTable[1].Points[1].SlavePos		  := 0.0;
+CamParameters.CamTable[1].Points[2].PointIndex		  := 2;
+CamParameters.CamTable[1].Points[2].FunctionType	  := MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[1].Points[2].PointType		  := MC_MotionPointType.MOTIONPOINTTYPE_TURN;
+CamParameters.CamTable[1].Points[2].RelIndexNextPoint := 1;
+CamParameters.CamTable[1].Points[2].MasterPos		  := 180.0;
+CamParameters.CamTable[1].Points[2].SlavePos		  := 100.0;
+CamParameters.CamTable[1].Points[3].PointIndex		  := 3;
+CamParameters.CamTable[1].Points[3].FunctionType	  := MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[1].Points[3].PointType		  := MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[1].Points[3].RelIndexNextPoint := 0;
+CamParameters.CamTable[1].Points[3].MasterPos		  := 360.0;
+CamParameters.CamTable[1].Points[3].SlavePos		  := 0.0;
+CamParameters.CamTable[1].NumberOfPoints			  := 3;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

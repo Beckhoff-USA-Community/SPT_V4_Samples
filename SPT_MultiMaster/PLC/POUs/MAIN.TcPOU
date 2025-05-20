@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{2f329292-40af-4b97-8211-8da9d7e47789}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : FB_Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+Nain Drive: A Virtual Axis (MachineVirtualAxis) that runs a reversing sequence from 0 - 1080, with the velocity set by the Visu.
+
+Station 1: Coupled to MachineVirtualAxis at a fixed gear ratio.
+
+Station 2: Coupled to MachineVirtualAxis at a variable gear ratio, adjustable in the Visu.
+
+Station 3: The Cam table master is the MachineVirtualAxis, the Virtual Cammed Axis follows the cam table. The Cammed Axis is coupled to the Virtual Cammed Axis.
+
+Station 4: The Offset Axis is coupled to both the MachineVirtualAxis and the Virtual Offset Master Axis, and will follow commands from both of them.
+
+Station 5: Combines 3 & 4. The Cam table master is the MachineVirtualAxis, the Virtual Cammed Axis follows the cam table. 
+	The Cammed Axis is coupled to the Virtual Cammed Axis and to the Virtual Master Offset Axis.
+
+
+
+V_Machine:
+	The State Machine will begin in Aborted.
+	Press the Reset button and it will progress to Idle.
+	Press the Start button and it will progress to Running.
+	The Machine Virtual Axis will begin its movement.
+	
+
+V_Operation:
+
+	Notes: 
+		1) The bar displays may lag behind the actual value of the axis. Use Scope View for accurate values.
+		2) More details about the implementation and design choices can be found in the body of each Equipment Module (Station).
+		3) While only Station 2 uses an adjustable gear ratio, it is possible to set and/or change the gear ratio of any FB_Component_BasicSlaveAxis.
+			Internally the component uses MC_GearInDyn which allows for the gear ratio to be changed at any time, but does take more than 1 PLC cycle to complete.
+		4) While many move types and commands (through cam tables or gear ratios) are possible to calculate and might work in a simulation, they might not work with actual hardware.
+			A slave axis (whether geared or cammed) will attempt to follow the commands calculated by the NC without consideration for the physical limits of the hardware.
+			Therefore, if the gear ratio is set too high then it is possible that the velocity required will cause the axis to fault.
+	
+		
+		
+	The Velocity of the Machine Virtual Axis can be changed, and the motion will run continuously from 1 to 1080.
+
+	Station 1 
+		The Fixed Axis will follow the Machine Virtual Axis at a fixed gear ratio of 0.5, therefore the value will range from 0 to 500.
+ 
+	Station 2 
+		The Variable Axis will follow the Machine Virtual Axis at an adjustable gear ratio.
+		The check box for 'Change at Master 0 position' is on by default.
+		The gear ratio is adjustable.
+		When checked the gear ratio will change when the Machine Virtual Axis reaches 0.
+		When unchecked the gear ratio will change on the next PLC scan.
+		
+	Station 3 
+		The Virtual Cammed Axis will follow the cam table with the Machine Virtual Axis as the master axis of the table.
+		The position of the master axis will be the 0 position of the table, and as the master moves the slave will follow based on the table values/calculations.
+		The Cammed Axis will be geared to the Virtual Cammed Axis at the default ratio of 1:1.
+		
+	Station 4
+		The Virtual Offset Master Axis can be moved -/+ 100 with the provided buttons.
+		The Offset Axis is geared to the Machine Virtual Axis and to the Virtual Offset Master Axis, both with the default gear ratio of 1:1.
+		When the Virtual Offset Master Axis is moved, the Offset Axis will apply this move to any commands received from the Machine Virtual Axis.
+		This means if the Machine Virtual Axis is moving forward at 100 mm/s and the Virtual Offset Master Axis also moves forward at 100 mm/s, then the Offset Axis will move forward at 200 mm/s.
+			If the Machine Virtual Axis is moving forward and the Virtual Offset Master Axis is moving in reverse at the same speed, then the Offset Axis velocity will be 0 mm/s.
+	
+	Station 5
+		The Virtual Cammed Master Axis will follow the cam table with the Machine Virtual Axis as the master axis of the table.
+		The position of the master axis will be the 0 position of the table, and as the master moves the slave will follow based on the table values/calculations.
+		The Virtual Offset Master Axis can be moved -/+ 100 with the provided buttons.
+		The Cammed Offset Axis will be geared to the Virtual Cammed Master Axis and to the Virtual Offset Master Axis at the default ratio of 1:1.
+		This will allow the Cammed Offset Axis to follow the Cam table while also using an offset.
+		
+		
+*)
+
+//This is for debug only and should be removed
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
