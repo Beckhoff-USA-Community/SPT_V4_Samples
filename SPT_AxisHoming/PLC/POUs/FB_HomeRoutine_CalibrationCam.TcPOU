@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_HomeRoutine_CalibrationCam" Id="{dbe5de1d-4390-49bb-bad5-fae195f2ce94}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_HomeRoutine_CalibrationCam EXTENDS FB_CyclicFB IMPLEMENTS I_MotionSequence
+VAR
+	_Axis : I_BasicAxis;
+
+	//
+	MCHomeCalCam	: MC_Home;
+	_HomingDn		: BOOL;
+	SequenceStep	: UDINT;
+	_Position		: LREAL;
+	_Options		: ST_HomingOptions;
+	_CalibrationCam : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Axis" Id="{9307518c-53f9-08b1-15d4-18035b66ffa5}">
+      <Declaration><![CDATA[PROPERTY Axis : I_BasicAxis]]></Declaration>
+      <Get Name="Get" Id="{3178f8fd-1a56-08c5-3bd2-12ec58d8df5f}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Axis := _Axis;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{077dfdb4-eb73-0913-29f6-caea5df7f37d}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Axis := Axis;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="CalibrationCam" Id="{0ddd634d-37c3-4f62-90e4-9fa1ef7ddd66}">
+      <Declaration><![CDATA[PROPERTY CalibrationCam : BOOL]]></Declaration>
+      <Get Name="Get" Id="{512f6d08-e037-4cc7-977c-23ac5de197e3}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CalibrationCam := _CalibrationCam;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{43034147-9d46-4434-b718-2f73343803b7}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_CalibrationCam := CalibrationCam;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="CyclicLogic" Id="{3b68e5be-7410-4a10-ba7e-73d4e8433cfc}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceStep OF
+	10:
+		IF _Axis <> 0 THEN
+			MCHomeCalCam(Axis			 := _Axis.Axis,
+						 Execute		 := TRUE,
+						 Position		 := _Position,
+						 HomingMode		 := MC_HomingMode.MC_DefaultHoming,
+						 Options		 := _Options,
+						 bCalibrationCam := _CalibrationCam);
+
+			IF NOT MCHomeCalCam.Busy THEN
+				IF MCHomeCalCam.Error THEN
+					_Error		 := TRUE;
+					_ErrorID	 := MCHomeCalCam.ErrorID;
+					SequenceStep := 0;
+				ELSE
+					//No error occurred
+					SequenceStep := 0;
+				END_IF
+
+				MCHomeCalCam(Axis := _Axis.Axis, Execute := FALSE);
+			END_IF
+		END_IF
+END_CASE
+
+_Busy := SequenceStep <> 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{a6cb3749-21f6-4829-adcc-beccdb4982d3}">
+      <Declaration><![CDATA[METHOD Execute : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF (_Axis = 0) OR _Busy THEN
+	RETURN;
+END_IF
+
+_Busy		 := TRUE;
+_Error		 := FALSE;
+_ErrorID	 := 0;
+_HomingDn	 := FALSE;
+SequenceStep := 10;
+Execute		 := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Options" Id="{ef04d79c-086d-4006-9a52-3584ed73a850}">
+      <Declaration><![CDATA[PROPERTY Options : ST_HomingOptions]]></Declaration>
+      <Get Name="Get" Id="{d1c0e72d-093f-4d90-980b-1de0392586d7}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Options := _Options;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{ad421931-833b-44fe-acf9-45ceb9fcdcc8}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Options := Options;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Position" Id="{b90d3843-878d-483c-943e-a235c1193d64}">
+      <Declaration><![CDATA[PROPERTY Position : LREAL]]></Declaration>
+      <Get Name="Get" Id="{e687b55a-6f98-4947-8a43-955859baacb9}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Position := _Position;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{afb6a16b-5efe-48a5-ac28-771b0afce150}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Position := Position;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

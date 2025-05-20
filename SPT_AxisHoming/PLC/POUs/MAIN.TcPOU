@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{b87b5d7e-4c76-4024-9020-04c03382fac0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : FB_Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+	The FB_Component_BasicAxis within the SPT Components library is configured to use a Homing Routine defined in the SPT_MotionControl library.
+	FB_HomeRoutine_SetZeroHere, which is an implementation of the MC_SetPosition from the Tc2_MC2 library. 
+	The strategy design pattern is used for HomeMethod, ResetMethod, and ExternalSequence. 
+	You can change the default homing routine by declaring an instance of a function block that implements the interface I_MotionSequence, 
+	and then passing it to the HomeMethod property of your instance of FB_Component_BasicAxis. 
+	Within the SPT Motion Control library we provide three other homing options (FB_HomeRoutine_AbsHoming, FB_HomeRoutine_HardStop, FB_HomeRoutine_SetPosition). 
+	Further documentation can be found here: https://beckhoff-usa-community.github.io/SPT-Libraries/SPT_MotionControl/functionblocks.html#home-routines
+	
+	For this sample project an Axis Component is declared within FB_Machine.
+	In the Execute method of FB_Machine one of 4 possible home routines can be selected.
+	The first 3 are from the SPT Motion Control library, and the fourth is availble in the project.
+	
+	Use the Visu to move tha state machine into Execute
+	and then toggle one of the four home routines in the execute mehod to start the homing process.
+	When using HomeCalCam, you will need to toggle _CalibrationCam within the FB_HomeRoutine_CalibrationCam
+	to simulate the axis moving onto and off of a physical home switch.
+ 	A Maintained PB has been added to the Visu for the _CalibrationCam
+*)
+
+//This is for debug only and should be removed
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
