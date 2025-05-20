@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="ProcessModule" Id="{046809f4-f19d-40ee-b5ff-f58884637d42}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ProcessModule EXTENDS FB_PackML_BaseModule
+VAR
+	Component : SampleComponent := (Name := 'Sample Component');
+
+	//
+	_StopRequestToMM : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="CyclicLogic" Id="{3025a22b-8dfc-4875-acbf-2fe968903d60}">
+      <Declaration><![CDATA[// This method serves as the entry point for all underlying FB logic
+METHOD PUBLIC CyclicLogic
+
+// This method should be called cyclically by descendant function blocks by invoking SUPER^.CyclicLogic().  Alternatively, the contents of this method could be reimplemented entirely in which case a call to this method would not be necessary.
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{c8280bd7-2a0b-4e59-b945-bb4b6b3380a5}">
+      <Declaration><![CDATA[// Basic module initialization logic
+METHOD PROTECTED Initialize : BOOL;
+
+// This method is called by CyclicLogic() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		//Register Components
+		RegisterComponent(Component);
+
+		//Setup Config
+		_LogModeChanges			:= FALSE;
+		_LogStateChanges		:= FALSE;
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10: // Call the Super to Initialize all SubModules and Components
+		IF SUPER^.Initialize() THEN
+			Initialize := TRUE;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="StopControlled" Id="{9556261a-9154-40b8-87d6-ab4f12eca4ba}">
+      <Declaration><![CDATA[// Provides fault reaction logic where the module state is driven to the Stopping state at the next available opportunity
+METHOD PROTECTED StopControlled
+
+// No error is thrown by this fault reaction.
+
+// This method is called by ComponentMonitor() or SubModuleMonitor() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Add code here for Controlled Stop, this code will not impact the other EMs
+
+//Add code here to notify the MM that the Module is stopping and the Machine should stop also (* this is optional *)
+_StopRequestToMM := TRUE;
+
+//
+SUPER^.StopControlled();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="StopRequestToMM" Id="{b119b256-3a5b-4c14-9b53-3ecafb1197d7}">
+      <Declaration><![CDATA[PROPERTY StopRequestToMM : BOOL]]></Declaration>
+      <Get Name="Get" Id="{3e241b11-3f39-4da4-9c06-08aafcfabf5f}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[StopRequestToMM := _StopRequestToMM;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{e6550bd9-d18a-49ab-98c1-1e9d4338e0f2}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_StopRequestToMM := StopRequestToMM;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

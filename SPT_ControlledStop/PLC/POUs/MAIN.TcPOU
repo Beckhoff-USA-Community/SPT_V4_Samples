@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{b9936adb-4dbb-49cf-b576-117765b52c61}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.
+
+(*
+
+This code is intended to be a simple example of how to perform a controlled stop of a machine when one EM has an error.
+The idea is that the EM with an Errored Component will call its StopControlled method and set a flag that is read by the MM, signaling that the machine needs to stop.
+Once the required EMs have completed (CurrentState = Completed), the machine can then issue an abort command.
+
+
+
+//These are the possible alarm responses, each of these has a corresponding method that will be called from the SubModuleMonitor() or ComponentMonitor()
+
+TYPE E_AlarmResponse : (
+		Abort_ImmediateError,
+		Abort_Immediate,
+		Stop_Immediate,
+		Stop_Controlled,
+		Hold_Immediate,
+		Hold_Controlled,
+		Suspend_Immediate,
+		Suspend_Controlled,
+		NoResponse - No corresponding Method
+	);
+END_TYPE
+
+
+//Each Fault in the type system has a severity level
+TcEventSeverity.Verbose
+TcEventSeverity.Info
+TcEventSeverity.Warning
+TcEventSeverity.Error
+TcEventSeverity.Critical
+
+//The array indexes below 0..4 correspond to the above severity levels
+//These are the defaults, therefore Verbose, Info, and Warning have NoResponse
+	while Error and Critical are set to AbortImmediateError
+	
+_ParentFaultResponseDefinitions : ARRAY[0..4] OF E_AlarmResponse := 
+	[E_AlarmResponse.NoResponse, 
+	E_AlarmResponse.NoResponse, 
+	E_AlarmResponse.NoResponse, 
+	E_AlarmResponse.Abort_ImmediateError, 
+	E_AlarmResponse.Abort_ImmediateError];
+
+In order to have a component set to StopControlled, change the _ParentFaultResponseDefinitions in the Initialize method of that component
+_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Stop_Controlled;
+
+//The StopControlled method of the base class must then be overridden.
+Include any code needed to handle the other components within the EM and then call the SUPER^.StopControlled()
+This will place the EM into State = Stopped
+
+In order to stop the entire machine after each EM has processed its current product a flag is set in the EM, StopRequestToMM.
+This flag is monitored by the SubModuleMonitor method of the MM, if TRUE it sets a local variable _StopRequestFromEM
+
+IF Process.StopRequestToMM THEN
+	_StopRequestFromEM := TRUE;
+END_IF
+
+
+In the CyclicLogic method of the MM, if the StopRequest is TRUE and the required EMs are in State = Complete
+the MM will issue an abort command to itself, which by default will cause all EMs to abort
+
+IF _StopRequestFromEM AND Outfeed.CurrentState = E_PMLState.ePMLState_Complete THEN
+	ChangeState(State := E_PMLCommand.ePMLCommand_Abort);
+END_IF
+	
+
+
+Code to take note of:
+SampleComponent.Initialize()
+ProcessModule.StopControlled()
+ProcessModule.StopRequestToMM.Get
+Machine.SubModuleMonitor()
+Machine.CyclicLogic()
+
+
+To run the test:
+1. Toggle resetStateMachine in MAIN - this will place the MM and all EMs in Production-Execute
+2. Verify that all EMs are in Production-Execute
+3. Toggle testError in SampleComponent.Monitoring()
+4. Verify that the Process Module is in Stopped, and note that the other EMs are still in Production-Execute
+5. Toggle testComplete in OutfeedModule.CyclicLogic()
+6. Verify that the MM and all EMs are in Production-Aborted
+7. Toggle testError in SampleComponent.Monitoring() - failure to turn off the error will cause the state machine of the ProcessModule to get stuck, you can use the abort command to recover from this situation
+8. Return to step 1
+
+*)
+
+//This is for debug only and should be removed
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
