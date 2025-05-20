@@ -18,7 +18,19 @@ LineIDs.dbg
 LineIDs.dbg.bak
 _Boot/
 _CompileInfo/
-_Libraries/
+*.compiled-library*
+*.library
+!SPT*.library
+_Libraries/*
+_Repository/
+
+
+#tmc file - use ! to include specific tmc files for Alarms and Events
+*.tmc
+!ComponentEvents.tmc
+!EquipmentEvents.tmc
+!MachineEvents.tmc
+
 
 .engineering_servers/
 liveview_*
