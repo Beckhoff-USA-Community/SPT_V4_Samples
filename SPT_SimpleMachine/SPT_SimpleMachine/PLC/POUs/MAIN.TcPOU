@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{21562df5-f06a-43f1-9335-ae6229d9d3e3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+	This example is the smallest possible implementation of the the framework. 
+	By calling the CyclicLogic of Machine everything inside the framework that is needed to control the statemachine and log the existing events is being processed.
+	
+	The HMIPermissions method is required to allow the Visu to control the state machine through the PackMLBaseModule_HMI structure.
+	
+	All libraries in this project are pinned at V3.9.x
+	While only the SPT Base Types library is used, the others are provided for your convenience.
+	
+*)
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
