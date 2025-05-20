@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{fa267af8-3f7d-4ff1-86ca-c722c9385435}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : FB_Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+	The FB_Component_BasicAxis has all of the basic moves provided by the MC2 library built in;
+	however, by use of the strategy pattern more complex move sequences can be programmed externally and an instance of those function blocks can be passed into the FB_Component_BasicAxis.ExternalSequence property.
+	Setting the property 'ExternalSequence' to the instance of a function block that implements the I_MotionSequence interface will allow for the RunExternalSequence method to execute that code.
+	While it is typical to set the HomeMethod or ResetMethod in an initialization routine and then not change it, the ExternalSequence can be changed as often as needed.
+
+	Note: After setting the ExternalSequence property, a call to the Axis's CyclicLogic method is required before it can be used. This can be done by either allowing 1 PLC scan between setting the ExternalSequence property
+	and the call to the RunExternalSequence method, or by calling the CyclicLogic method directly after setting the ExternalSequence.
+
+	When creating your own external sequence, it is best to start by using a state machine within the CyclicLogic method and use the Execute method to move the state machine from idle to the first step.
+		
+	Stopping the external sequence requires some consideration related to its internal state machine. The example for a Reversing Sequence given in this project never has an end point and will continue its sequence indefinitely.
+	Because the FB_Component_BasicAxis.Stop method calls an instance of MC_Halt internally, the axis might stop momentarily but will ultimately start again once the timers have elasped.
+	To stop the reversing sequence an additional Stop method was added that calls the Axis.Stop method and sets the state machine to idle, in order to prevent it from restarting.
+
+ 
+
+
+*)
+
+//This is for debug only and should be removed
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

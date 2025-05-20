@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_Machine" Id="{b5457780-1c44-4e83-aa46-5485e68808f8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Machine EXTENDS FB_PackML_BaseModule
+VAR
+	VAxis		  : FB_Component_BasicAxis := (Name := 'V Axis');
+	RevSequence	  : FB_ReversingSequence;
+	startRevSeq	  : BOOL;
+	stopAxis	  : BOOL;
+	moveAbs		  : BOOL;
+	abortExternal : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="CyclicLogic" Id="{b7d8f8c5-8734-4182-b50d-06c596ed9497}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{eb793d9b-3478-4c61-be01-ecb70d71e11d}">
+      <Declaration><![CDATA[METHOD PROTECTED Execute
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[RevSequence.Velocity  := 5.0;
+RevSequence.Position1 := 10.0;
+RevSequence.IdleTime  := 1000;
+RevSequence.Position2 := 0.0;
+
+//Test Reversing Sequence
+IF startRevSeq THEN
+	startRevSeq			   := FALSE;
+	VAXis.ExternalSequence := RevSequence;
+	VAxis.CyclicLogic(); //Update the internals before calling the method
+	VAxis.RunExternalSequence();
+END_IF
+
+//Properly stops the External Sequence
+IF stopAxis THEN
+	stopAxis := FALSE;
+	RevSequence.Stop();
+END_IF
+
+//Aborts the existing move, starts new move, but ultimately returns to the External Sequence
+IF moveAbs THEN
+	moveAbs := FALSE;
+	VAxis.MoveAbsolute(Position := 100.0, AbortPrevious := TRUE);
+END_IF
+
+//Halts the axis, but not the state machine of the External Sequence
+IF abortExternal THEN
+	abortExternal := FALSE;
+	IF VAxis.Stop() THEN
+		;
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HMIPermissions" Id="{e11bdbbf-8028-4a8a-8c22-10590a9a76ee}">
+      <Declaration><![CDATA[// Automatically enables and disables HMI control based on the PackML mode
+METHOD PROTECTED HMIPermissions
+
+// This method is called cyclically by CyclicLogic()]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(ThisModuleOnly := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{798219fb-53fc-4b1e-94ef-0cc86517e444}">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(Component := VAxis);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			Initialize := TRUE;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Starting" Id="{3d1b53cb-4fac-4d3d-9bee-04f00ee33a88}">
+      <Declaration><![CDATA[METHOD PROTECTED Starting
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10:
+		IF VAxis.Enable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20:
+		IF VAxis.Enabled THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Starting();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

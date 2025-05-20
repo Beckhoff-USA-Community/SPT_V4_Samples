@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="FB_ReversingSequence" Id="{9caf3fe3-21c0-4675-baef-5e228678bdb8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ReversingSequence EXTENDS FB_CyclicFB IMPLEMENTS I_MotionSequence
+VAR
+	_Axis		 : I_BasicAxis;
+	_Position1	 : LREAL;
+	_Position2	 : LREAL;
+	_Velocity	 : LREAL;
+	_IdleTime	 : INT;
+	fbMove		 : MC_MoveAbsolute;
+	fbIdle		 : TON;
+	SequenceStep : E_RevSeq;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_CyclicFB" Id="{971a84d7-6ea4-482b-a1d5-ed542adf21c2}" />
+    <Folder Name="I_MotionSequence" Id="{27ddc1ef-906f-4502-aa86-13076f436f95}" />
+    <Property Name="Axis" Id="{e774e632-6bed-474a-a374-325b0d5252b1}" FolderPath="I_MotionSequence\">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Axis : SPT_Motion_Control.I_BasicAxis]]></Declaration>
+      <Get Name="Get" Id="{07e1a932-df04-4ebe-934e-45351a5b26b9}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Axis := _Axis;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{f3b272cc-e277-4940-8448-41fb97af6d29}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Axis := Axis;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="CyclicLogic" Id="{cc4f62f5-539c-4700-a340-a403a875c94b}" FolderPath="I_CyclicFB\">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceStep OF
+	E_RevSeq.Stopped: //Idle, waiting for Execute method
+	E_RevSeq.Move1:	  //Move to Position 1
+		fbMove(Axis		:= _Axis.Axis,
+			   Execute	:= TRUE,
+			   Position := _Position1,
+			   Velocity := _Velocity);
+
+		SequenceStep := E_RevSeq.Wait1;
+
+	E_RevSeq.Wait1:
+		fbMove(Axis := _Axis.Axis, Execute := FALSE);
+		IF NOT fbmove.Busy THEN
+			IF NOT fbMove.Error THEN
+				SequenceStep := E_RevSeq.Idle1;
+			ELSE
+				_ErrorID	 := 11;
+				SequenceStep := E_RevSeq.Error;
+			END_IF
+		END_IF
+
+	E_RevSeq.Idle1: //Wait for idle time
+		fbIdle(IN := TRUE, PT := TO_TIME(_IdleTime));
+		IF fbIdle.Q THEN
+			fbIdle(IN := FALSE);
+			SequenceStep := E_RevSeq.Move2;
+		END_IF
+
+	E_RevSeq.Move2: //Move to Posotion 2
+		fbMove(Axis		:= _Axis.Axis,
+			   Execute	:= TRUE,
+			   Position := _Position2,
+			   Velocity := _Velocity);
+
+		SequenceStep := E_RevSeq.Wait2;
+
+	E_RevSeq.Wait2:
+		fbMove(Axis := _Axis.Axis, Execute := FALSE);
+		IF NOT fbmove.Busy THEN
+			IF NOT fbMove.Error THEN
+				SequenceStep := E_RevSeq.Idle2;
+			ELSE
+				_ErrorID	 := 11;
+				SequenceStep := E_RevSeq.Error;
+			END_IF
+		END_IF
+
+	E_RevSeq.Idle2: //Wait for Idle time
+		fbIdle(IN := TRUE, PT := TO_TIME(_IdleTime));
+		IF fbIdle.Q THEN
+			fbIdle(IN := FALSE);
+			SequenceStep := E_RevSeq.Move1;
+		END_IF
+
+	E_RevSeq.Error: //Error Step
+		_Error := TRUE;
+END_CASE
+
+_Busy := SequenceStep <> 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{a8de52a2-1572-4824-be8a-a9405090d682}" FolderPath="I_MotionSequence\">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD Execute : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF (_Axis = 0) OR _Busy THEN
+	RETURN;
+END_IF
+
+_Busy		 := TRUE;
+_Error		 := FALSE;
+_ErrorID	 := 0;
+SequenceStep := E_RevSeq.Move1;
+Execute		 := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IdleTime" Id="{200a7173-147e-429e-a882-13f8ca3643b9}">
+      <Declaration><![CDATA[PROPERTY IdleTime : INT]]></Declaration>
+      <Get Name="Get" Id="{f1c502b6-5e92-42f1-a456-68dbe9967d29}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IdleTime := _IdleTime;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{62cf3192-b89b-4918-93e9-710af118c190}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_IdleTime := IdleTime;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Position1" Id="{9433b65f-1b4e-4ceb-ab64-28c96f2b2fd9}">
+      <Declaration><![CDATA[PROPERTY Position1 : LREAL]]></Declaration>
+      <Get Name="Get" Id="{d6713a58-aa0d-4560-87d5-6bb1ef3efc65}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Position1 := _Position1;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{f0c49669-6992-4e27-9c4c-eda1eef605b6}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Position1 := Position1;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Position2" Id="{348dd7c4-c219-47d6-ae59-d1583256a385}">
+      <Declaration><![CDATA[PROPERTY Position2 : LREAL]]></Declaration>
+      <Get Name="Get" Id="{43e72b6a-3e4d-496d-95f5-10f8c3f9e57b}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Position2 := _Position2;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{a0bb831f-f59a-47a5-baff-143495efb4d5}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Position2 := Position2;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="Stop" Id="{b61b03e4-ebb5-4472-b011-83ad31428f3d}">
+      <Declaration><![CDATA[METHOD Stop : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Stop := FALSE;
+IF _Axis <> 0 THEN
+	SequenceStep := E_RevSeq.Stopped;
+	IF _Axis.Stop() THEN
+		Stop := TRUE;
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Velocity" Id="{266c92e2-1277-433c-996b-a87d45ce722c}">
+      <Declaration><![CDATA[PROPERTY Velocity : LREAL]]></Declaration>
+      <Get Name="Get" Id="{09d71f05-0202-416d-93d3-84acdce3dd22}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Velocity := _Velocity;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{0eea3931-03ed-41ba-853a-869bdfc2a551}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_Velocity := Velocity;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>
