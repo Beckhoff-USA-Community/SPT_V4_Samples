@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="Machine" Id="{97b13e0f-7ef6-40f4-849d-6d84ce81f8c2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
+VAR
+	VirtualMaster : VirtualMaster := (Name := 'Virtual Master');
+	Unwind		  : Unwind		  := (Name := 'Unwind');
+	Draw		  : DrawAxis	  := (Name := 'Draw');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="CyclicLogic" Id="{ebaa3bcd-61fa-4a47-a483-8bcc7204493f}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HMIPermissions" Id="{02a84cbc-9044-46fc-82ea-ae0aee99ae0f}">
+      <Declaration><![CDATA[// Automatically enables and disables HMI control based on the PackML mode
+METHOD PROTECTED HMIPermissions
+
+// This method is called cyclically by CyclicLogic()]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(ThisModuleOnly := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{7539f10c-75c9-45c6-b67b-8bf6d3682a5e}">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0: // Register Submodules
+		RegisterSubmodule(VirtualMaster);
+		RegisterSubmodule(Unwind);
+		RegisterSubmodule(Draw);
+		_LogModeChanges			:= FALSE;
+		_LogStateChanges		:= FALSE;
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		Unwind.MasterAxisRef	REF= VirtualMaster.AxisRef;
+		Draw.MasterAxisRef		REF= VirtualMaster.AxisRef;
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	20:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

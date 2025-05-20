@@ -1,0 +1,2523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1c436a6c-ab86-41a9-ad7a-288d75f3455b}</ProjectGuid>
+    <SubObjectsSortedByName>True</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>true</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>PLC</Name>
+    <ProgramVersion>3.1.4026.15</ProgramVersion>
+    <Application>{0e1f56ff-83d1-49f9-934d-de84c7568d62}</Application>
+    <TypeSystem>{e0e68bf1-10b1-4d80-b68a-0ca8b6bbb44c}</TypeSystem>
+    <Implicit_Task_Info>{632c523c-bac6-4ea6-a6e5-59d23e65b5f2}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{072a4cd3-bcf1-4729-9180-c63993b5c1a1}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{afd98df1-b6c7-44be-8a49-e08bbca9aa06}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{2f2bdab0-1556-4410-a7f1-3c332c7e2915}</LibraryReferences>
+    <Released>false</Released>
+    <AllowChecksForLibrary>false</AllowChecksForLibrary>
+    <POUsForPropertyAccessIncluded>false</POUsForPropertyAccessIncluded>
+    <GlobalVersionStructureIncluded>false</GlobalVersionStructureIncluded>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GlobalTextList.TcGTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\00 Machine\Machine.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\01 Virtual Master\VirtualMaster.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\02 Unwind\Unwind.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\03 Draw\DrawAxis.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Visualization Manager.TcVMO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VISUs\Visualization.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="POUs\Modules" />
+    <Folder Include="POUs\Modules\00 Machine" />
+    <Folder Include="POUs\Modules\01 Virtual Master" />
+    <Folder Include="POUs\Modules\02 Unwind" />
+    <Folder Include="POUs\Modules\03 Draw" />
+    <Folder Include="VISUs" />
+    <Folder Include="POUs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="SPT Base Types">
+      <DefaultResolution>SPT Base Types, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_BaseTypes</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Components">
+      <DefaultResolution>SPT Components, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_Components</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Diagnostic">
+      <DefaultResolution>SPT Diagnostic, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_Diagnostic</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT EtherCat">
+      <DefaultResolution>SPT EtherCat, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_EtherCat</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Event Logger">
+      <DefaultResolution>SPT Event Logger, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_EventLogger</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Kinematics">
+      <DefaultResolution>SPT Kinematics, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_Kinematics</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Motion Control">
+      <DefaultResolution>SPT Motion Control, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_Motion_Control</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT NCI">
+      <DefaultResolution>SPT NCI, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_NCI</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Utilities">
+      <DefaultResolution>SPT Utilities, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT Vision">
+      <DefaultResolution>SPT Vision, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_Vision</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SPT XTS">
+      <DefaultResolution>SPT XTS, * (Beckhoff Automation LLC)</DefaultResolution>
+      <Namespace>SPT_XTS</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemMeter">
+      <DefaultResolution>VisuElemMeter, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemMeter</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElems">
+      <DefaultResolution>VisuElems, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElems</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemsSpecialControls">
+      <DefaultResolution>VisuElemsSpecialControls, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemsSpecialControls</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemsWinControls">
+      <DefaultResolution>VisuElemsWinControls, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemsWinControls</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemTextEditor">
+      <DefaultResolution>VisuElemTextEditor, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuElemTextEditor</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuInputs">
+      <DefaultResolution>VisuInputs, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuInputs</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuNativeControl">
+      <DefaultResolution>VisuNativeControl, 4.7.0.0 (System)</DefaultResolution>
+      <Namespace>VisuNativeControl</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_EventLogger">
+      <DefaultResolution>Tc3_EventLogger, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_EventLogger</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_PackML_V3">
+      <DefaultResolution>Tc3_PackML_V3, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_PackML_V3</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PLC.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderResolution Include="SPT Base Types">
+      <Resolution>SPT Base Types, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Components">
+      <Resolution>SPT Components, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Diagnostic">
+      <Resolution>SPT Diagnostic, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT EtherCat">
+      <Resolution>SPT EtherCat, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Event Logger">
+      <Resolution>SPT Event Logger, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Kinematics">
+      <Resolution>SPT Kinematics, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Motion Control">
+      <Resolution>SPT Motion Control, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT NCI">
+      <Resolution>SPT NCI, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Utilities">
+      <Resolution>SPT Utilities, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Vision">
+      <Resolution>SPT Vision, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT XTS">
+      <Resolution>SPT XTS, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
+        <o>
+          <v n="Name">"{192FAD59-8248-4824-A8DE-9177C94C195A}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{246001F4-279D-43AC-B241-948EB31120E1}</v>
+        <o>
+          <v n="Name">"{246001F4-279D-43AC-B241-948EB31120E1}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>UnicodeStrings</v>
+            <v>False</v>
+          </d>
+        </o>
+        <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
+        <o>
+          <v n="Name">"{29BD8D0C-3586-4548-BB48-497B9A01693F}"</v>
+          <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+            <v>Metrics</v>
+            <o>
+              <v n="Name">"Metrics"</v>
+              <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+                <v>0ade9a3b-311c-4293-bc26-bcf994cdbbdc</v>
+                <o>
+                  <v n="Name">"0ade9a3b-311c-4293-bc26-bcf994cdbbdc"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>0ba696f2-ce22-4330-931f-4ddd5c597896</v>
+                <o>
+                  <v n="Name">"0ba696f2-ce22-4330-931f-4ddd5c597896"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>15c07c54-9586-460c-802f-b3b4a408e3c7</v>
+                <o>
+                  <v n="Name">"15c07c54-9586-460c-802f-b3b4a408e3c7"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>19fab17a-876c-4a8d-9d74-3e5d92b63dc8</v>
+                <o>
+                  <v n="Name">"19fab17a-876c-4a8d-9d74-3e5d92b63dc8"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>2a5d0bd7-5767-43e1-92ab-90d924ade69e</v>
+                <o>
+                  <v n="Name">"2a5d0bd7-5767-43e1-92ab-90d924ade69e"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>2ee16325-7a34-4109-82cd-e99144bdbf43</v>
+                <o>
+                  <v n="Name">"2ee16325-7a34-4109-82cd-e99144bdbf43"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>3fb5ac29-8ac7-4ca4-863e-49c3c89643b9</v>
+                <o>
+                  <v n="Name">"3fb5ac29-8ac7-4ca4-863e-49c3c89643b9"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>40f104a2-99f0-486d-9c44-47e8c759ca07</v>
+                <o>
+                  <v n="Name">"40f104a2-99f0-486d-9c44-47e8c759ca07"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>571980c1-792d-4355-a9cb-4c3a8f254ab0</v>
+                <o>
+                  <v n="Name">"571980c1-792d-4355-a9cb-4c3a8f254ab0"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>62b98ef9-b4c6-4777-bc0a-29245bb8b9f3</v>
+                <o>
+                  <v n="Name">"62b98ef9-b4c6-4777-bc0a-29245bb8b9f3"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>6549803a-9e82-4b28-aff1-2425cbec813b</v>
+                <o>
+                  <v n="Name">"6549803a-9e82-4b28-aff1-2425cbec813b"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>6c74d656-f35f-41b9-b449-eae882ed12fe</v>
+                <o>
+                  <v n="Name">"6c74d656-f35f-41b9-b449-eae882ed12fe"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>6cb1bfb1-4d4a-43ed-96f4-cd0254fc33b5</v>
+                <o>
+                  <v n="Name">"6cb1bfb1-4d4a-43ed-96f4-cd0254fc33b5"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>87b20586-90da-40d8-82ce-62a7dd0ba8af</v>
+                <o>
+                  <v n="Name">"87b20586-90da-40d8-82ce-62a7dd0ba8af"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>9b526466-3bbe-40a9-b5a5-1cfadd791459</v>
+                <o>
+                  <v n="Name">"9b526466-3bbe-40a9-b5a5-1cfadd791459"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>aebdfc4d-fc4f-4fac-bf2e-22b603bc1880</v>
+                <o>
+                  <v n="Name">"aebdfc4d-fc4f-4fac-bf2e-22b603bc1880"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>b42720b9-b152-4b52-ad89-630e0f5acab1</v>
+                <o>
+                  <v n="Name">"b42720b9-b152-4b52-ad89-630e0f5acab1"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>c4137578-73e0-4a9c-ad9c-7773a1cff401</v>
+                <o>
+                  <v n="Name">"c4137578-73e0-4a9c-ad9c-7773a1cff401"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>cccccccc-1d56-4a6c-a0bc-05d25846cb02</v>
+                <o>
+                  <v n="Name">"cccccccc-1d56-4a6c-a0bc-05d25846cb02"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>daa3e89b-a727-4bc9-bd38-29afc6024f90</v>
+                <o>
+                  <v n="Name">"daa3e89b-a727-4bc9-bd38-29afc6024f90"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>e58378e8-a2fb-4a33-8013-8a91270388d0</v>
+                <o>
+                  <v n="Name">"e58378e8-a2fb-4a33-8013-8a91270388d0"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+                <v>f6dd9a78-1e71-4d9c-9e61-394eb38f3809</v>
+                <o>
+                  <v n="Name">"f6dd9a78-1e71-4d9c-9e61-394eb38f3809"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>stLowerLimit</v>
+                    <v>""</v>
+                    <v>stUpperLimit</v>
+                    <v>""</v>
+                  </d>
+                </o>
+              </d>
+              <d n="Values" t="Hashtable" />
+            </o>
+            <v>NamingConventions</v>
+            <o>
+              <v n="Name">"NamingConventions"</v>
+              <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+                <v>10</v>
+                <o>
+                  <v n="Name">"10"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>102</v>
+                <o>
+                  <v n="Name">"102"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>103</v>
+                <o>
+                  <v n="Name">"103"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>104</v>
+                <o>
+                  <v n="Name">"104"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>105</v>
+                <o>
+                  <v n="Name">"105"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>106</v>
+                <o>
+                  <v n="Name">"106"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>107</v>
+                <o>
+                  <v n="Name">"107"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>108</v>
+                <o>
+                  <v n="Name">"108"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>11</v>
+                <o>
+                  <v n="Name">"11"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>12</v>
+                <o>
+                  <v n="Name">"12"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>121</v>
+                <o>
+                  <v n="Name">"121"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>122</v>
+                <o>
+                  <v n="Name">"122"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>123</v>
+                <o>
+                  <v n="Name">"123"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>124</v>
+                <o>
+                  <v n="Name">"124"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>13</v>
+                <o>
+                  <v n="Name">"13"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>14</v>
+                <o>
+                  <v n="Name">"14"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>15</v>
+                <o>
+                  <v n="Name">"15"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>151</v>
+                <o>
+                  <v n="Name">"151"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>152</v>
+                <o>
+                  <v n="Name">"152"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>153</v>
+                <o>
+                  <v n="Name">"153"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>154</v>
+                <o>
+                  <v n="Name">"154"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>16</v>
+                <o>
+                  <v n="Name">"16"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>17</v>
+                <o>
+                  <v n="Name">"17"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>18</v>
+                <o>
+                  <v n="Name">"18"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>19</v>
+                <o>
+                  <v n="Name">"19"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>20</v>
+                <o>
+                  <v n="Name">"20"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>21</v>
+                <o>
+                  <v n="Name">"21"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>22</v>
+                <o>
+                  <v n="Name">"22"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>23</v>
+                <o>
+                  <v n="Name">"23"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>24</v>
+                <o>
+                  <v n="Name">"24"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>25</v>
+                <o>
+                  <v n="Name">"25"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>26</v>
+                <o>
+                  <v n="Name">"26"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>27</v>
+                <o>
+                  <v n="Name">"27"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>28</v>
+                <o>
+                  <v n="Name">"28"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>29</v>
+                <o>
+                  <v n="Name">"29"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>3</v>
+                <o>
+                  <v n="Name">"3"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>30</v>
+                <o>
+                  <v n="Name">"30"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>31</v>
+                <o>
+                  <v n="Name">"31"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>32</v>
+                <o>
+                  <v n="Name">"32"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>33</v>
+                <o>
+                  <v n="Name">"33"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>34</v>
+                <o>
+                  <v n="Name">"34"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>35</v>
+                <o>
+                  <v n="Name">"35"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>36</v>
+                <o>
+                  <v n="Name">"36"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>37</v>
+                <o>
+                  <v n="Name">"37"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>38</v>
+                <o>
+                  <v n="Name">"38"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>4</v>
+                <o>
+                  <v n="Name">"4"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>5</v>
+                <o>
+                  <v n="Name">"5"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>51</v>
+                <o>
+                  <v n="Name">"51"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>53</v>
+                <o>
+                  <v n="Name">"53"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>54</v>
+                <o>
+                  <v n="Name">"54"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>55</v>
+                <o>
+                  <v n="Name">"55"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>56</v>
+                <o>
+                  <v n="Name">"56"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>57</v>
+                <o>
+                  <v n="Name">"57"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>58</v>
+                <o>
+                  <v n="Name">"58"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>59</v>
+                <o>
+                  <v n="Name">"59"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>6</v>
+                <o>
+                  <v n="Name">"6"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>61</v>
+                <o>
+                  <v n="Name">"61"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>62</v>
+                <o>
+                  <v n="Name">"62"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>63</v>
+                <o>
+                  <v n="Name">"63"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>64</v>
+                <o>
+                  <v n="Name">"64"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>65</v>
+                <o>
+                  <v n="Name">"65"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>7</v>
+                <o>
+                  <v n="Name">"7"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>70</v>
+                <o>
+                  <v n="Name">"70"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>71</v>
+                <o>
+                  <v n="Name">"71"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>72</v>
+                <o>
+                  <v n="Name">"72"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>73</v>
+                <o>
+                  <v n="Name">"73"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>8</v>
+                <o>
+                  <v n="Name">"8"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+                <v>9</v>
+                <o>
+                  <v n="Name">"9"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="String">
+                    <v>stPrefix</v>
+                    <v></v>
+                  </d>
+                </o>
+              </d>
+              <d n="Values" t="Hashtable" />
+            </o>
+            <v>NamingConventionsSettings</v>
+            <o>
+              <v n="Name">"NamingConventionsSettings"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                <v>CombinedDataTypesRecursive</v>
+                <v>True</v>
+                <v>CombineScopeWithDatatypePrefix</v>
+                <v>True</v>
+                <v>FirstCharUpperCase</v>
+                <v>False</v>
+              </d>
+            </o>
+            <v>Rules</v>
+            <o>
+              <v n="Name">"Rules"</v>
+              <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+                <v>1</v>
+                <o>
+                  <v n="Name">"1"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>10</v>
+                <o>
+                  <v n="Name">"10"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>100</v>
+                <o>
+                  <v n="Name">"100"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>bWarning</v>
+                    <v>false</v>
+                    <v>nUpperLimit</v>
+                    <v>1024</v>
+                  </d>
+                </o>
+                <v>101</v>
+                <o>
+                  <v n="Name">"101"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>bWarning</v>
+                    <v>false</v>
+                    <v>Exceptions</v>
+                    <v>""</v>
+                    <v>MaxChars</v>
+                    <v>30</v>
+                    <v>MinChars</v>
+                    <v>5</v>
+                  </d>
+                </o>
+                <v>102</v>
+                <o>
+                  <v n="Name">"102"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>103</v>
+                <o>
+                  <v n="Name">"103"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>105</v>
+                <o>
+                  <v n="Name">"105"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>106</v>
+                <o>
+                  <v n="Name">"106"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>107</v>
+                <o>
+                  <v n="Name">"107"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>11</v>
+                <o>
+                  <v n="Name">"11"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>111</v>
+                <o>
+                  <v n="Name">"111"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>112</v>
+                <o>
+                  <v n="Name">"112"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>113</v>
+                <o>
+                  <v n="Name">"113"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>114</v>
+                <o>
+                  <v n="Name">"114"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>115</v>
+                <o>
+                  <v n="Name">"115"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>117</v>
+                <o>
+                  <v n="Name">"117"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>118</v>
+                <o>
+                  <v n="Name">"118"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>119</v>
+                <o>
+                  <v n="Name">"119"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>12</v>
+                <o>
+                  <v n="Name">"12"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>120</v>
+                <o>
+                  <v n="Name">"120"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>121</v>
+                <o>
+                  <v n="Name">"121"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>122</v>
+                <o>
+                  <v n="Name">"122"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>123</v>
+                <o>
+                  <v n="Name">"123"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>124</v>
+                <o>
+                  <v n="Name">"124"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>125</v>
+                <o>
+                  <v n="Name">"125"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>13</v>
+                <o>
+                  <v n="Name">"13"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>130</v>
+                <o>
+                  <v n="Name">"130"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>133</v>
+                <o>
+                  <v n="Name">"133"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>134</v>
+                <o>
+                  <v n="Name">"134"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>14</v>
+                <o>
+                  <v n="Name">"14"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>140</v>
+                <o>
+                  <v n="Name">"140"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>145</v>
+                <o>
+                  <v n="Name">"145"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>147</v>
+                <o>
+                  <v n="Name">"147"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>148</v>
+                <o>
+                  <v n="Name">"148"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>15</v>
+                <o>
+                  <v n="Name">"15"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>150</v>
+                <o>
+                  <v n="Name">"150"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>16</v>
+                <o>
+                  <v n="Name">"16"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>160</v>
+                <o>
+                  <v n="Name">"160"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>161</v>
+                <o>
+                  <v n="Name">"161"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>162</v>
+                <o>
+                  <v n="Name">"162"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>163</v>
+                <o>
+                  <v n="Name">"163"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>164</v>
+                <o>
+                  <v n="Name">"164"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>166</v>
+                <o>
+                  <v n="Name">"166"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>false</v>
+                    <v>bWarning</v>
+                    <v>false</v>
+                    <v>MaxInOuts</v>
+                    <v>10</v>
+                    <v>MaxInputs</v>
+                    <v>10</v>
+                    <v>MaxOutputs</v>
+                    <v>10</v>
+                  </d>
+                </o>
+                <v>167</v>
+                <o>
+                  <v n="Name">"167"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>168</v>
+                <o>
+                  <v n="Name">"168"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>169</v>
+                <o>
+                  <v n="Name">"169"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>17</v>
+                <o>
+                  <v n="Name">"17"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>170</v>
+                <o>
+                  <v n="Name">"170"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>171</v>
+                <o>
+                  <v n="Name">"171"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>172</v>
+                <o>
+                  <v n="Name">"172"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>175</v>
+                <o>
+                  <v n="Name">"175"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>178</v>
+                <o>
+                  <v n="Name">"178"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>bWarning</v>
+                    <v>false</v>
+                    <v>nCognitiveComplexityLimit</v>
+                    <v>20</v>
+                  </d>
+                </o>
+                <v>179</v>
+                <o>
+                  <v n="Name">"179"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String">
+                    <v>bActive</v>
+                    <v>true</v>
+                    <v>bWarning</v>
+                    <v>false</v>
+                    <v>nCouplingLimit</v>
+                    <v>30</v>
+                  </d>
+                </o>
+                <v>18</v>
+                <o>
+                  <v n="Name">"18"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>180</v>
+                <o>
+                  <v n="Name">"180"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>19</v>
+                <o>
+                  <v n="Name">"19"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>2</v>
+                <o>
+                  <v n="Name">"2"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>20</v>
+                <o>
+                  <v n="Name">"20"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>21</v>
+                <o>
+                  <v n="Name">"21"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>22</v>
+                <o>
+                  <v n="Name">"22"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>23</v>
+                <o>
+                  <v n="Name">"23"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>24</v>
+                <o>
+                  <v n="Name">"24"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>25</v>
+                <o>
+                  <v n="Name">"25"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>26</v>
+                <o>
+                  <v n="Name">"26"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>27</v>
+                <o>
+                  <v n="Name">"27"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>28</v>
+                <o>
+                  <v n="Name">"28"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>29</v>
+                <o>
+                  <v n="Name">"29"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>3</v>
+                <o>
+                  <v n="Name">"3"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>31</v>
+                <o>
+                  <v n="Name">"31"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>32</v>
+                <o>
+                  <v n="Name">"32"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>33</v>
+                <o>
+                  <v n="Name">"33"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>34</v>
+                <o>
+                  <v n="Name">"34"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>35</v>
+                <o>
+                  <v n="Name">"35"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>36</v>
+                <o>
+                  <v n="Name">"36"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>37</v>
+                <o>
+                  <v n="Name">"37"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>38</v>
+                <o>
+                  <v n="Name">"38"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>39</v>
+                <o>
+                  <v n="Name">"39"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>4</v>
+                <o>
+                  <v n="Name">"4"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>40</v>
+                <o>
+                  <v n="Name">"40"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>41</v>
+                <o>
+                  <v n="Name">"41"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>42</v>
+                <o>
+                  <v n="Name">"42"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>43</v>
+                <o>
+                  <v n="Name">"43"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>44</v>
+                <o>
+                  <v n="Name">"44"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>46</v>
+                <o>
+                  <v n="Name">"46"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>47</v>
+                <o>
+                  <v n="Name">"47"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>48</v>
+                <o>
+                  <v n="Name">"48"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>5</v>
+                <o>
+                  <v n="Name">"5"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>51</v>
+                <o>
+                  <v n="Name">"51"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>52</v>
+                <o>
+                  <v n="Name">"52"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>53</v>
+                <o>
+                  <v n="Name">"53"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>54</v>
+                <o>
+                  <v n="Name">"54"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>55</v>
+                <o>
+                  <v n="Name">"55"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>56</v>
+                <o>
+                  <v n="Name">"56"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>57</v>
+                <o>
+                  <v n="Name">"57"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>58</v>
+                <o>
+                  <v n="Name">"58"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>59</v>
+                <o>
+                  <v n="Name">"59"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>6</v>
+                <o>
+                  <v n="Name">"6"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>60</v>
+                <o>
+                  <v n="Name">"60"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>61</v>
+                <o>
+                  <v n="Name">"61"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>62</v>
+                <o>
+                  <v n="Name">"62"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>63</v>
+                <o>
+                  <v n="Name">"63"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>64</v>
+                <o>
+                  <v n="Name">"64"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>65</v>
+                <o>
+                  <v n="Name">"65"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>66</v>
+                <o>
+                  <v n="Name">"66"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>7</v>
+                <o>
+                  <v n="Name">"7"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>72</v>
+                <o>
+                  <v n="Name">"72"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>73</v>
+                <o>
+                  <v n="Name">"73"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>75</v>
+                <o>
+                  <v n="Name">"75"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>76</v>
+                <o>
+                  <v n="Name">"76"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>True</v>
+                  </d>
+                </o>
+                <v>77</v>
+                <o>
+                  <v n="Name">"77"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>78</v>
+                <o>
+                  <v n="Name">"78"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>8</v>
+                <o>
+                  <v n="Name">"8"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>81</v>
+                <o>
+                  <v n="Name">"81"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>9</v>
+                <o>
+                  <v n="Name">"9"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>90</v>
+                <o>
+                  <v n="Name">"90"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>False</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+                <v>95</v>
+                <o>
+                  <v n="Name">"95"</v>
+                  <d n="SubKeys" t="Hashtable" />
+                  <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+                    <v>bActive</v>
+                    <v>True</v>
+                    <v>bWarning</v>
+                    <v>False</v>
+                  </d>
+                </o>
+              </d>
+              <d n="Values" t="Hashtable" />
+            </o>
+          </d>
+          <d n="Values" t="Hashtable" ckt="String">
+            <v>MaxStaticAnalysisErrors</v>
+            <v>500U</v>
+            <v>MaxStaticAnalysisWarnings</v>
+            <v>500U</v>
+            <v>PerformStaticAnalyse</v>
+            <v>false</v>
+            <v>SuppressedKeywords</v>
+            <v>""</v>
+          </d>
+        </o>
+        <v>{40450F57-0AA3-4216-96F3-5444ECB29763}</v>
+        <o>
+          <v n="Name">"{40450F57-0AA3-4216-96F3-5444ECB29763}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String">
+            <v>ActiveVisuExtensionsLength</v>
+            <v>0</v>
+            <v>ActiveVisuProfile</v>
+            <v>"IR0whWr8bwfyBwAAaCbC8QAAAABVAgAA1xHl6QAAAAABAAAAAAAAAAEaUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwACTHsAZgA5ADUAYgBiADQAMgA2AC0ANQA1ADIANAAtADQAYgA0ADUALQA5ADQAMAAwAC0AZgBiADAAZgAyAGUANwA3AGUANQAxAGIAfQADCE4AYQBtAGUABDJUAHcAaQBuAEMAQQBUACAAMwAuADEAIABCAHUAaQBsAGQAIAA0ADAAMgA2AC4AMQA1AAUWUAByAG8AZgBpAGwAZQBEAGEAdABhAAZMewAxADYAZQA1ADUAYgA2ADAALQA3ADAANAAzAC0ANABhADYAMwAtAGIANgA1AGIALQA2ADEANAA3ADEAMwA4ADcAOABkADQAMgB9AAcSTABpAGIAcgBhAHIAaQBlAHMACEx7ADMAYgBmAGQANQA0ADUAOQAtAGIAMAA3AGYALQA0AGQANgBlAC0AYQBlADEAYQAtAGEAOAAzADMANQA2AGEANQA1ADEANAAyAH0ACUx7ADkAYwA5ADUAOAA5ADYAOAAtADIAYwA4ADUALQA0ADEAYgBiAC0AOAA4ADcAMQAtADgAOQA1AGYAZgAxAGYAZQBkAGUAMQBhAH0ACg5WAGUAcgBzAGkAbwBuAAsGaQBuAHQADApVAHMAYQBnAGUADQpUAGkAdABsAGUADhpWAGkAcwB1AEUAbABlAG0ATQBlAHQAZQByAA8OQwBvAG0AcABhAG4AeQAQDFMAeQBzAHQAZQBtABESVgBpAHMAdQBFAGwAZQBtAHMAEjBWAGkAcwB1AEUAbABlAG0AcwBTAHAAZQBjAGkAYQBsAEMAbwBuAHQAcgBvAGwAcwATKFYAaQBzAHUARQBsAGUAbQBzAFcAaQBuAEMAbwBuAHQAcgBvAGwAcwAUJFYAaQBzAHUARQBsAGUAbQBUAGUAeAB0AEUAZABpAHQAbwByABUiVgBpAHMAdQBOAGEAdABpAHYAZQBDAG8AbgB0AHIAbwBsABYUVgBpAHMAdQBJAG4AcAB1AHQAcwAXGFYAaQBzAHUARQBsAGUAbQBCAGEAcwBlABgmRABlAHYAUABsAGEAYwBlAGgAbwBsAGQAZQByAHMAVQBzAGUAZAAZCGIAbwBvAGwAGiJQAGwAdQBnAGkAbgBDAG8AbgBzAHQAcgBhAGkAbgB0AHMAG0x7ADQAMwBkADUAMgBiAGMAZQAtADkANAAyAGMALQA0ADQAZAA3AC0AOQBlADkANAAtADEAYgBmAGQAZgAzADEAMABlADYAMwBjAH0AHBxBAHQATABlAGEAcwB0AFYAZQByAHMAaQBvAG4AHRRQAGwAdQBnAGkAbgBHAHUAaQBkAB4WUwB5AHMAdABlAG0ALgBHAHUAaQBkAB9IYQBmAGMAZAA1ADQANAA2AC0ANAA5ADEANAAtADQAZgBlADcALQBiAGIANwA4AC0AOQBiAGYAZgBlAGIANwAwAGYAZAAxADcAIBRVAHAAZABhAHQAZQBJAG4AZgBvACFMewBiADAAMwAzADYANgBhADgALQBiADUAYwAwAC0ANABiADkAYQAtAGEAMAAwAGUALQBlAGIAOAA2ADAAMQAxADEAMAA0AGMAMwB9ACIOVQBwAGQAYQB0AGUAcwAjTHsAMQA4ADYAOABmAGYAYwA5AC0AZQA0AGYAYwAtADQANQAzADIALQBhAGMAMAA2AC0AMQBlADMAOQBiAGIANQA1ADcAYgA2ADkAfQAkTHsAYQA1AGIAZAA0ADgAYwAzAC0AMABkADEANwAtADQAMQBiADUALQBiADEANgA0AC0ANQBmAGMANgBhAGQAMgBiADkANgBiADcAfQAlFk8AYgBqAGUAYwB0AHMAVAB5AHAAZQAmVFUAcABkAGEAdABlAEwAYQBuAGcAdQBhAGcAZQBNAG8AZABlAGwARgBvAHIAQwBvAG4AdgBlAHIAdABpAGIAbABlAEwAaQBiAHIAYQByAGkAZQBzACcQTABpAGIAVABpAHQAbABlACgUTABpAGIAQwBvAG0AcABhAG4AeQApHlUAcABkAGEAdABlAFAAcgBvAHYAaQBkAGUAcgBzACo4UwB5AHMAdABlAG0ALgBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBIAGEAcwBoAHQAYQBiAGwAZQArEnYAaQBzAHUAZQBsAGUAbQBzACwMcwB5AHMAdABlAG0ALUg2AGMAYgAxAGMAZABlADEALQBkADUAZABjAC0ANABhADMAYgAtADkAMAA1ADQALQAyADEAZgBhADcANQA2AGEAMwBmAGEANAAuKEkAbgB0AGUAcgBmAGEAYwBlAFYAZQByAHMAaQBvAG4ASQBuAGYAbwAvTHsAYwA2ADEAMQBlADQAMAAwAC0ANwBmAGIAOQAtADQAYwAzADUALQBiADkAYQBjAC0ANABlADMAMQA0AGIANQA5ADkANgA0ADMAfQAwGE0AYQBqAG8AcgBWAGUAcgBzAGkAbwBuADEYTQBpAG4AbwByAFYAZQByAHMAaQBvAG4AMgxMAGUAZwBhAGMAeQAzMEwAYQBuAGcAdQBhAGcAZQBNAG8AZABlAGwAVgBlAHIAcwBpAG8AbgBJAG4AZgBvADQwTABvAGEAZABMAGkAYgByAGEAcgBpAGUAcwBJAG4AdABvAFAAcgBvAGoAZQBjAHQANRpDAG8AbQBwAGEAdABpAGIAaQBsAGkAdAB5ANAAAhoD0AMBLQTQBQYaB9AHCBoBRQcJCNAACRoERQoLBAQAAAAHAAAAAAAAAAAAAADQDAutAgAAANANAS0O0A8BLRDQAAkaBEUKCwQEAAAABwAAAAAAAAAAAAAA0AwLrQEAAADQDQEtEdAPAS0Q0AAJGgRFCgsEBAAAAAcAAAAAAAAAAAAAANAMC60CAAAA0A0BLRLQDwEtENAACRoERQoLBAQAAAAHAAAAAAAAAAAAAADQDAutAgAAANANAS0T0A8BLRDQAAkaBEUKCwQEAAAABwAAAAAAAAAAAAAA0AwLrQIAAADQDQEtFNAPAS0Q0AAJGgRFCgsEBAAAAAcAAAAAAAAAAAAAANAMC60CAAAA0A0BLRXQDwEtENAACRoERQoLBAQAAAAHAAAAAAAAAAAAAADQDAutAgAAANANAS0W0A8BLRDQAAkaBEUKCwQEAAAABwAAAAAAAAAAAAAA0AwLrQQAAADQDQEtF9APAS0Q0BgZrQFFGhsB0AAbGgJFHAsEBAAAAAIAAAAAAAAAAAAAANAdHi0f0CAhGgJFIiMC0AAkGgVFCgsEAwAAAAMAAAAAAAAACgAAANAlC60AAAAA0AMBLSbQJwEtEdAoAS0Q0AAkGgVFCgsEAwAAAAMAAAAAAAAACgAAANAlC60BAAAA0AMBLSbQJwEtEdAoAS0QmikqAUUAAQLQAAEtK9AAAS0s0AAeLS3QLi8aA9AwC60BAAAA0DELrSQAAADQMhmtANAzLxoD0DALrQIAAADQMQutBgAAANAyGa0A0DQZrQDQNRmtAA=="</v>
+          </d>
+        </o>
+        <v>{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}</v>
+        <o>
+          <v n="Name">"{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>WriteLineIDs</v>
+            <v>False</v>
+          </d>
+        </o>
+        <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
+        <o>
+          <v n="Name">"{8F99A816-E488-41E4-9FA3-846536012284}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>DisabledWarningIds</v>
+            <v>5410</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="Int32">System.Int32</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+    <Type n="UInt32">System.UInt32</Type>
+  </TypeList>
+</XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

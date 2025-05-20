@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="MAIN" Id="{7e5c02d1-a39d-4f28-8629-587743ad1f26}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+This code is not a full implementation as there is no use of MC_Reset or other needed code for actual machine use.
+Take note of step 20 in FB_Machine.Initialize, this is where the Axes are assigned to their Master.
+The Unwind Axis makes use of a Gear Ratio in its Coupling.
+There is no code to move the master axis, but it can be jogged from the NC for testing.
+*)
+
+// For Debug Only
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

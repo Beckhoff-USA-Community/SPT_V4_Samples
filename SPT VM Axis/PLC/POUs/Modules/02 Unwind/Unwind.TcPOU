@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+  <POU Name="Unwind" Id="{531fe024-1c35-49f6-9ea6-b83468bb853c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Unwind EXTENDS FB_PackML_BaseModule
+VAR
+	Axis	  : FB_Component_BasicSlaveAxis := (Name := 'Unwind Axis');
+	MasterRef : REFERENCE TO AXIS_REF;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Aborting" Id="{0e94a613-0e2d-43e0-9b59-861775c0ebdb}">
+      <Declaration><![CDATA[METHOD PROTECTED Aborting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Mode is ignored
+CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Stop Axis - Will also Gear Out
+		IF Axis.Stop() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20:
+		IF Axis.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30: // Disable Axis
+		IF Axis.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		IF NOT Axis.Enabled THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Aborting();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="AxisRef" Id="{d13e3860-08f0-4ce9-b897-f8cfcdba7e93}">
+      <Declaration><![CDATA[PROPERTY AxisRef : REFERENCE TO AXIS_REF]]></Declaration>
+      <Get Name="Get" Id="{e4cb4012-07fb-4a4b-a3d7-60c1cc05d1d7}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AxisRef REF= Axis.Axis;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Completing" Id="{2b5befec-31ac-4e0e-8a6d-577805b741ec}">
+      <Declaration><![CDATA[METHOD PROTECTED Completing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10: // Wait for Master Axis to Stop
+				IF Axis.InGear AND Axis.Stopped THEN
+					IF Axis.Stop() THEN // Also causes Gear Out to happen
+						SequenceState := SequenceState + 10;
+					END_IF
+				ELSIF NOT Axis.InGear THEN
+					IF Axis.Stop() THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			20:
+				IF Axis.Stopped THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Completing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{761193c7-ca9e-4580-b131-82e57b210c90}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{e3a8ca4b-f177-4610-88fe-7274fe30d43b}">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(Axis);
+		_LogModeChanges			:= FALSE;
+		_LogStateChanges		:= FALSE;
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	20:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="MasterAxisRef" Id="{3374daa1-7f61-440f-abd3-569198fd16f3}">
+      <Declaration><![CDATA[PROPERTY MasterAxisRef : REFERENCE TO AXIS_REF]]></Declaration>
+      <Set Name="Set" Id="{5f9e248d-d1a0-4f8f-bf65-7d19780c479a}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF __ISVALIDREF(MasterAxisRef) THEN
+	MasterRef REF= MasterAxisRef;
+END_IF]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="Starting" Id="{edea4660-a85a-4b0f-83e4-8557ebe4b1fc}">
+      <Declaration><![CDATA[METHOD PROTECTED Starting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CommandedMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10:
+				IF Axis.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF Axis.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30:
+				IF __ISVALIDREF(MasterRef) THEN
+					Axis.Master1	  REF= MasterRef;
+					Axis.RatioMaster1 := 0.99; //Can be set at anytime and changed while in motion
+					IF Axis.GearIn() THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			40:
+				IF Axis.InGear THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			50:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Starting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stopping" Id="{c55df479-e1d7-47c1-8f42-c67178fb7cf3}">
+      <Declaration><![CDATA[METHOD PROTECTED Stopping]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10: // Stop Axis - Will also Gear Out
+				IF Axis.Stop() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF Axis.Stopped THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Stopping();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
