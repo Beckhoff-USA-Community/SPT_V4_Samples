@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.~u
 
 *.tsproj.bak
 *.plcproj.bak
@@ -18,6 +19,7 @@ LineIDs.dbg
 LineIDs.dbg.bak
 _Boot/
 _CompileInfo/
+_CompileInfo_Upload/
 *.compiled-library*
 *.library
 !SPT*.library
