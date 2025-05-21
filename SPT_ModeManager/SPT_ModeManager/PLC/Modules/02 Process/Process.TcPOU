@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Process" Id="{83f7c65b-5908-4bc0-9481-015c3317f485}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Process EXTENDS FB_PackML_BaseModule
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

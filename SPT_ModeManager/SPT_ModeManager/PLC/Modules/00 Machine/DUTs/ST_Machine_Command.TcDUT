@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Machine_Command" Id="{26415c7a-814b-4a50-8bac-47e7087a13e6}">
+    <Declaration><![CDATA[TYPE ST_Machine_Command :
+	STRUCT
+		StartHoming : BOOL;
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

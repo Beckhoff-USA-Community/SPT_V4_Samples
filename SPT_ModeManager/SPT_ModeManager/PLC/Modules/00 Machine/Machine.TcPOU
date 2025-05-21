@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Machine" Id="{953a801a-bc57-4b76-9fa7-2a86f5763aa6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
+VAR
+	Infeed	: Infeed  := (Name := 'Infeed');
+	Process : Process := (Name := 'Process');
+	Outfeed : Outfeed := (Name := 'Outfeed');
+
+	//
+	Machine_HMI : ST_Machine_HMI;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="CreateCustomModes" Id="{d9c82004-48cf-41ac-a536-9c891535f029}">
+      <Declaration><![CDATA[METHOD CreateCustomModes
+VAR
+	i		   : E_PMLCustomMode;
+	aModeNames : ARRAY[E_PMLCustomMode.Invalid..E_PMLCustomMode.Last] OF STRING;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//
+aModeNames[0]  := TO_STRING(E_PMLCustomMode.Invalid);
+aModeNames[1]  := TO_STRING(E_PMLCustomMode.Production);
+aModeNames[2]  := TO_STRING(E_PMLCustomMode.Maintenance);
+aModeNames[3]  := TO_STRING(E_PMLCustomMode.Manual);
+aModeNames[4]  := TO_STRING(E_PMLCustomMode.Home);			//UserMode1
+aModeNames[5]  := TO_STRING(E_PMLCustomMode.PrePosition);	//UserMode2
+aModeNames[6]  := TO_STRING(E_PMLCustomMode.PreProduction); //UserMode3
+aModeNames[7]  := TO_STRING(E_PMLCustomMode.SingleCycle);	//UserMode4
+aModeNames[8]  := TO_STRING(E_PMLCustomMode.SingleStep);	//UserMode5
+aModeNames[9]  := TO_STRING(E_PMLCustomMode.Setup);			//UserMode6
+aModeNames[10] := TO_STRING(E_PMLCustomMode.CleanInPlace);	//UserMode7
+aModeNames[11] := TO_STRING(E_PMLCustomMode.DryCycle);		//UserMode8
+aModeNames[12] := TO_STRING(E_PMLCustomMode.Teach);			//UserMode9
+aModeNames[13] := TO_STRING(E_PMLCustomMode.Last);			//UserMode10
+
+//Default Config for all modes, this is also the default config for Production Mode as defined by Pack ML
+CustomModes.bDisableClearing			   := FALSE;
+CustomModes.bDisableStarting			   := FALSE;
+CustomModes.bDisableSuspended			   := FALSE;
+CustomModes.bDisableStopping			   := FALSE;
+CustomModes.bDisableAborting			   := FALSE;
+CustomModes.bDisableHolding				   := FALSE;
+CustomModes.bDisableHeld				   := FALSE;
+CustomModes.bDisableUnholding			   := FALSE;
+CustomModes.bDisableSuspending			   := FALSE;
+CustomModes.bDisableUnsuspending		   := FALSE;
+CustomModes.bDisableResetting			   := FALSE;
+CustomModes.bDisableIdle				   := FALSE;
+CustomModes.bDisableCompleting			   := FALSE;
+CustomModes.bDisableComplete			   := FALSE;
+CustomModes.bEnableUnitModeChangeStopped   := TRUE;
+CustomModes.bEnableUnitModeChangeIdle	   := TRUE;
+CustomModes.bEnableUnitModeChangeSuspended := TRUE;
+CustomModes.bEnableUnitModeChangeExecute   := FALSE;
+CustomModes.bEnableUnitModeChangeAborted   := TRUE;
+CustomModes.bEnableUnitModeChangeHeld	   := TRUE;
+CustomModes.bEnableUnitModeChangeComplete  := TRUE;
+
+//
+FOR i := E_PMLCustomMode.Invalid TO E_PMLCustomMode.Last DO
+	CustomModes(emode := i, sName := aModeNames[i]);
+END_FOR
+
+//Maintenance Mode default as defined by PackML
+CustomModes(eMode						   := E_PMLCustomMode.Maintenance,
+			sName						   := 'Maintenance',
+			bDisableClearing			   := TRUE,
+			bDisableStarting			   := FALSE,
+			bDisableSuspended			   := TRUE,
+			bDisableStopping			   := FALSE,
+			bDisableAborting			   := FALSE,
+			bDisableHolding				   := FALSE,
+			bDisableHeld				   := FALSE,
+			bDisableUnholding			   := FALSE,
+			bDisableSuspending			   := TRUE,
+			bDisableUnsuspending		   := TRUE,
+			bDisableResetting			   := FALSE,
+			bDisableIdle				   := FALSE,
+			bDisableCompleting			   := TRUE,
+			bDisableComplete			   := TRUE,
+			bEnableUnitModeChangeStopped   := TRUE,
+			bEnableUnitModeChangeIdle	   := TRUE,
+			bEnableUnitModeChangeSuspended := FALSE,
+			bEnableUnitModeChangeExecute   := FALSE,
+			bEnableUnitModeChangeAborted   := TRUE,
+			bEnableUnitModeChangeHeld	   := TRUE,
+			bEnableUnitModeChangeComplete  := FALSE);
+
+//Manual Mode default as defined by PackML
+CustomModes(eMode						   := E_PMLCustomMode.Manual,
+			sName						   := 'Manual',
+			bDisableClearing			   := TRUE,
+			bDisableStarting			   := FALSE,
+			bDisableSuspended			   := TRUE,
+			bDisableStopping			   := FALSE,
+			bDisableAborting			   := FALSE,
+			bDisableHolding				   := TRUE,
+			bDisableHeld				   := TRUE,
+			bDisableUnholding			   := TRUE,
+			bDisableSuspending			   := TRUE,
+			bDisableUnsuspending		   := TRUE,
+			bDisableResetting			   := FALSE,
+			bDisableIdle				   := FALSE,
+			bDisableCompleting			   := TRUE,
+			bDisableComplete			   := TRUE,
+			bEnableUnitModeChangeStopped   := TRUE,
+			bEnableUnitModeChangeIdle	   := TRUE,
+			bEnableUnitModeChangeSuspended := FALSE,
+			bEnableUnitModeChangeExecute   := FALSE,
+			bEnableUnitModeChangeAborted   := TRUE,
+			bEnableUnitModeChangeHeld	   := FALSE,
+			bEnableUnitModeChangeComplete  := FALSE);
+
+//Home Mode - Configured the same as Production
+CustomModes(eMode						   := E_PMLCustomMode.Home,
+			sName						   := 'Home',
+			bDisableClearing			   := FALSE,
+			bDisableStarting			   := FALSE,
+			bDisableSuspended			   := FALSE,
+			bDisableStopping			   := FALSE,
+			bDisableAborting			   := FALSE,
+			bDisableHolding				   := FALSE,
+			bDisableHeld				   := FALSE,
+			bDisableUnholding			   := FALSE,
+			bDisableSuspending			   := FALSE,
+			bDisableUnsuspending		   := FALSE,
+			bDisableResetting			   := FALSE,
+			bDisableIdle				   := FALSE,
+			bDisableCompleting			   := FALSE,
+			bDisableComplete			   := FALSE,
+			bEnableUnitModeChangeStopped   := TRUE,
+			bEnableUnitModeChangeIdle	   := TRUE,
+			bEnableUnitModeChangeSuspended := TRUE,
+			bEnableUnitModeChangeExecute   := FALSE,
+			bEnableUnitModeChangeAborted   := TRUE,
+			bEnableUnitModeChangeHeld	   := TRUE,
+			bEnableUnitModeChangeComplete  := TRUE);
+
+// Dry Cycle - If settings are the same as Production, only the eMode and sName must be updated
+CustomModes(eMode := E_PMLCustomMode.DryCycle, sName := 'Dry Cycle');
+
+// Teach - If settings are similar to Production, only the eMode, sName, and the differences must be changed
+CustomModes(eMode						   := E_PMLCustomMode.Teach,
+			sName						   := 'Teach',
+			bDisableHolding				   := TRUE,
+			bDisableSuspending			   := TRUE,
+			bEnableUnitModeChangeSuspended := FALSE,
+			bEnableUnitModeChangeHeld	   := FALSE,
+			bEnableUnitModeChangeComplete  := FALSE);
+
+//This mode is not intended to be used
+CustomModes(eMode						   := E_PMLCustomMode.Last,
+			sName						   := 'Last',
+			bDisableClearing			   := TRUE,
+			bDisableStarting			   := TRUE,
+			bDisableSuspended			   := TRUE,
+			bDisableStopping			   := TRUE,
+			bDisableAborting			   := FALSE,
+			bDisableHolding				   := TRUE,
+			bDisableHeld				   := TRUE,
+			bDisableUnholding			   := TRUE,
+			bDisableSuspending			   := TRUE,
+			bDisableUnsuspending		   := TRUE,
+			bDisableResetting			   := TRUE,
+			bDisableIdle				   := TRUE,
+			bDisableCompleting			   := TRUE,
+			bDisableComplete			   := TRUE,
+			bEnableUnitModeChangeStopped   := FALSE,
+			bEnableUnitModeChangeIdle	   := FALSE,
+			bEnableUnitModeChangeSuspended := FALSE,
+			bEnableUnitModeChangeExecute   := FALSE,
+			bEnableUnitModeChangeAborted   := TRUE,
+			bEnableUnitModeChangeHeld	   := FALSE,
+			bEnableUnitModeChangeComplete  := FALSE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{6d4ed0e0-aec5-44a1-877e-6b0bcdaf9003}">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Execute state*)
+METHOD PROTECTED Execute
+
+VAR
+	done: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLCustomMode.Production:
+		;
+
+	E_PMLCustomMode.Home: //User Mode 1
+		IF Machine_HMI.Command.StartHoming THEN
+			Machine_HMI.Command.StartHoming := FALSE;
+			Machine_HMI.Status.HomeComplete := TRUE;
+			ChangeState(State := E_PMLCommand.Complete);
+		END_IF
+
+	E_PMLCustomMode.Maintenance:
+		;
+
+ELSE
+	;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HMIPermissions" Id="{ae62aa56-73ff-4446-a233-d3ce501fda3c}">
+      <Declaration><![CDATA[(* Automatically enables and disables HMI control based on the PackML mode*)
+METHOD PROTECTED HMIPermissions
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Idle" Id="{d0933a89-4902-440a-b67b-3b3d0ba1192b}">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Idle state*)
+METHOD PROTECTED Idle
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT Machine_HMI.Status.HomeComplete THEN
+	ChangeMode(Mode := E_PMLCustomMode.Home);
+END_IF
+
+CASE _CurrentMode OF
+	E_PMLCustomMode.Production:
+		;
+
+	E_PMLCustomMode.Home: //User Mode 1
+		;
+
+	E_PMLCustomMode.Maintenance:
+		;
+
+ELSE
+	;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{563069b4-df21-4c5b-a8db-0fb2d2934ac8}">
+      <Declaration><![CDATA[(* Basic module initialization logic*)
+METHOD PROTECTED Initialize : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE SequenceState OF
+	0:
+		RegisterSubmodule(SubModule := Infeed);
+		RegisterSubmodule(SubModule := Process);
+		RegisterSubmodule(SubModule := Outfeed);
+		SequenceState := SequenceState + 10;
+
+	10:
+		CreateCustomModes();
+		SequenceState := SequenceState + 10;
+
+	20:
+		IF SUPER^.Initialize() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

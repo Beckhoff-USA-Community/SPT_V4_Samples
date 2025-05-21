@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_PMLCustomMode" Id="{6b78c102-518a-4284-a814-64c5e55ac3c5}">
+    <Declaration><![CDATA[{attribute 'to_string'}
+TYPE E_PMLCustomMode : (
+		//Protected
+		Invalid		:= 0,
+		Production	:= 1,
+		Maintenance := 2,
+		Manual		:= 3,
+		//User-Defined
+		Home		  := 4,	 //User Mode 1
+		PrePosition	  := 5,	 //User Mode 2
+		PreProduction := 6,	 //User Mode 3
+		SingleCycle	  := 7,	 //User Mode 4
+		SingleStep	  := 8,	 //User Mode 5
+		Setup		  := 9,	 //User Mode 6
+		CleanInPlace  := 10, //User Mode 7
+		DryCycle	  := 11, //User Mode 8
+		Teach		  := 12, //User Mode 9
+		Remote		  := 13,
+		Last		  := 14 //User Mode 10
+
+	//E_PMLUnitMode.ePMLUnitMode_UserMode28
+	) DINT;
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

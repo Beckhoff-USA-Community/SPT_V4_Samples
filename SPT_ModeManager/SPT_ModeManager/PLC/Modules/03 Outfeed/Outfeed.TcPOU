@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Outfeed" Id="{281e2777-2c03-497a-82e3-651ecf3118b5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Outfeed EXTENDS FB_PackML_BaseModule
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

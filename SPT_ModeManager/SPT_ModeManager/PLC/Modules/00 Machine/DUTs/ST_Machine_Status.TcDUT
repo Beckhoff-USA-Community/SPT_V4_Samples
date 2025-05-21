@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Machine_Status" Id="{1137c440-9402-4f8f-b8f9-11f0b24c29c7}">
+    <Declaration><![CDATA[TYPE ST_Machine_Status :
+	STRUCT
+		HomeComplete : BOOL;
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>
