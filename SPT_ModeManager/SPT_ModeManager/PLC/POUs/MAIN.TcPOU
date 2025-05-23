@@ -3,7 +3,7 @@
   <POU Name="MAIN" Id="{ab71cd83-397a-4b3b-8c69-cb2ca456c789}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
-	Machine : Machine := (Name := 'Machine0');
+	Machine : Machine := (Name := 'Machine');
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[Machine.CyclicLogic();]]></ST>

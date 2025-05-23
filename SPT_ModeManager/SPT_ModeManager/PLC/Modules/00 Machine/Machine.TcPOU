@@ -180,9 +180,7 @@ CustomModes(eMode						   := E_PMLCustomMode.Last,
     <Method Name="Execute" Id="{6d4ed0e0-aec5-44a1-877e-6b0bcdaf9003}">
       <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Execute state*)
 METHOD PROTECTED Execute
-
 VAR
-	done: BOOL;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _CurrentMode OF
@@ -206,16 +204,14 @@ END_CASE]]></ST>
     </Method>
     <Method Name="HMIPermissions" Id="{ae62aa56-73ff-4446-a233-d3ce501fda3c}">
       <Declaration><![CDATA[(* Automatically enables and disables HMI control based on the PackML mode*)
-METHOD PROTECTED HMIPermissions
-]]></Declaration>
+METHOD PROTECTED HMIPermissions]]></Declaration>
       <Implementation>
         <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
       </Implementation>
     </Method>
     <Method Name="Idle" Id="{d0933a89-4902-440a-b67b-3b3d0ba1192b}">
       <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Idle state*)
-METHOD PROTECTED Idle
-]]></Declaration>
+METHOD PROTECTED Idle]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF NOT Machine_HMI.Status.HomeComplete THEN
 	ChangeMode(Mode := E_PMLCustomMode.Home);
@@ -241,20 +237,20 @@ END_CASE]]></ST>
 METHOD PROTECTED Initialize : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[Initialize := FALSE;
-CASE SequenceState OF
+CASE DescendantSequenceState OF
 	0:
 		RegisterSubmodule(SubModule := Infeed);
 		RegisterSubmodule(SubModule := Process);
 		RegisterSubmodule(SubModule := Outfeed);
-		SequenceState := SequenceState + 10;
+		DescendantSequenceState := DescendantSequenceState + 10;
 
 	10:
 		CreateCustomModes();
-		SequenceState := SequenceState + 10;
+		DescendantSequenceState := DescendantSequenceState + 10;
 
 	20:
 		IF SUPER^.Initialize() THEN
-			SequenceState := SequenceState + 10;
+			DescendantSequenceState := DescendantSequenceState + 10;
 		END_IF
 
 	30:

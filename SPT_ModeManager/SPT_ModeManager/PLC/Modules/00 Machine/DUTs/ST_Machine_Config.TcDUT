@@ -2,9 +2,8 @@
 <TcPlcObject Version="1.1.0.1">
   <DUT Name="ST_Machine_Config" Id="{889df147-2e76-4171-b1c8-574498d8bb14}">
     <Declaration><![CDATA[TYPE ST_Machine_Config :
-STRUCT
-END_STRUCT
-END_TYPE
-]]></Declaration>
+	STRUCT
+	END_STRUCT
+END_TYPE]]></Declaration>
   </DUT>
 </TcPlcObject>
