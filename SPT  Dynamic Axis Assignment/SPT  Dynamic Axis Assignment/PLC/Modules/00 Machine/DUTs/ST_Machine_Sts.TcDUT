@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Machine_Sts" Id="{c25640e2-b92a-47ce-8a06-7f3d13e3f0d3}">
+    <Declaration><![CDATA[TYPE ST_Machine_Sts :
+	STRUCT
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

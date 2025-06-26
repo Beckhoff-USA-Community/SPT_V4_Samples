@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Press" Id="{1222aabd-7b12-475c-8198-f1135d3077f5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Press EXTENDS FB_PackML_BaseModule
+VAR_INPUT
+	GroupId : USINT; //4. Assigned during declaration, used to match up with AxisAssignment
+END_VAR
+
+VAR
+	_ipGlobalAxes	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_BasicAxis;		// 2. Interface to be assigned to a Globally declared axis
+	_ipComponent	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_ComponentBase; // 3. Interface to be used for RegisterComponent
+	_iAxisActive	  : ARRAY[1..GVL_Axes.MAX_AXES] OF INT;
+	_ipLocalAxes	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_BasicAxis; // 9.b. Hold the addresses of the active GLV_Axes.Axis for the EM
+	NumberOfLocalAxes : INT;
+
+	//
+	ClearingState : INT; // 7.d
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{87d3264f-aded-4d44-ae07-660b8f9c5bde}" />
+    <Folder Name="Commands" Id="{a2484b47-cae2-418a-a111-bf61ee2b3eb5}" />
+    <Folder Name="CyclicLogic" Id="{3be7ce57-675a-4ad8-a0ae-6e02c2fd9746}" />
+    <Folder Name="Initialize" Id="{1bd32e16-41c3-4b9b-ba1e-aa4d7c71ecba}" />
+    <Method Name="Aborting" Id="{ccd1b27c-9609-4438-bef0-ceee5dadfd3b}" FolderPath="Acting States\">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Aborting state*)
+METHOD PROTECTED Aborting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ClearingState := 0; // 7.d.
+SUPER^.Aborting();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="ActiveAxes" Id="{30dfd28a-57a5-49ca-bc5e-cf341459a1d6}">
+      <Declaration><![CDATA[PROPERTY ActiveAxes : ARRAY[1..GVL_AXES.MAX_AXES] OF INT]]></Declaration>
+      <Get Name="Get" Id="{8fb427b4-6ff8-45a7-846a-2a2c2118a8ae}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[ActiveAxes := _iAxisActive;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{51b51252-af73-49a0-83c8-aa817ef00d46}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_iAxisActive := ActiveAxes; // 8.c.]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="Clearing" Id="{880b36ff-21d4-4e43-8661-9271d2c3c978}" FolderPath="Acting States\">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Clearing state*)
+METHOD PROTECTED Clearing
+VAR
+	i : UDINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE ClearingState OF
+	0:
+		// 7.a. _InitComplete is set to FALSE and the ipComponents array is set to 0
+		_InitComplete := FALSE;
+		FOR i := 1 TO NumberOfComponents DO
+			ipComponents[i] := 0;
+		END_FOR
+
+		ClearingState := ClearingState + 10;
+
+	10:
+		IF _InitComplete THEN
+			ClearingState := ClearingState + 10;
+		END_IF
+
+	20:
+		StateTasksComplete := TRUE;
+END_CASE
+
+// 7.c. It is required that the SUPER^.Clearing method not be called until after the Initialization has been completed, otherwise a page fault will occur.
+IF _InitComplete THEN
+	SUPER^.Clearing();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{9a977ae7-0c93-48b8-84d6-569212f150e4}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[METHOD CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{e3fc66a5-6799-4aba-ba4e-ad1ce16ddb91}" FolderPath="Initialize\">
+      <Declaration><![CDATA[(* Basic module initialization logic*)
+METHOD PROTECTED Initialize : BOOL
+VAR
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0: // 5.a. Each GVL_Axes.Axis is assigned to the local _ipAxes array
+		FOR i := 1 TO GVL_Axes.MAX_AXES DO
+			_ipGlobalAxes[i] := GVL_Axes.Axis[i];
+		END_FOR
+
+		// 9.c. The list of _ipLocalAxis is cleared
+		FOR i := 1 TO GVL_Axes.MAX_AXES DO
+			_ipLocalAxes[i] := 0;
+		END_FOR
+
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		NumberOfLocalAxes := 0; // 9.c. Set the count to 0
+		FOR i := 1 TO GVL_Axes.MAX_AXES DO
+			// 5.b. Using __QueryInterface each _ipAxis is cast to its _ipComponent interface
+			IF __QUERYINTERFACE(_ipGlobalAxes[i], _ipComponent[i]) THEN
+				// 5.c. 7.b. 8.d. If the _iAxisActive is equal to the GroupID, then the Component is registered to the EM
+				IF (_iAxisActive[i] = GroupId) THEN
+					RegisterComponent(Component := _ipComponent[i]);
+
+					// 9.d. Copy the address from the Global to the Local to issue commands and check status of axes assigned to this EM only
+					_ipLocalAxes[i]	  := _ipGlobalAxes[i];
+					NumberOfLocalAxes := NumberOfLocalAxes + 1;
+				END_IF
+			END_IF
+		END_FOR
+
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	20:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveAll" Id="{35993c49-7a22-42fe-8c6f-dee29b63aa2e}" FolderPath="Commands\">
+      <Declaration><![CDATA[METHOD MoveAll : BOOL
+VAR_INPUT
+	Position : LREAL;
+END_VAR
+
+VAR
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MoveAll := FALSE;
+
+//
+FOR i := 1 TO GVL_Axes.MAX_AXES DO
+	IF _ipLocalAxes[i] <> 0 THEN
+		_ipLocalAxes[i].MoveRelative(Position, TRUE);
+	END_IF
+END_FOR
+
+//
+
+(*FOR i := 1 TO GVL_Axes.MAX_AXES DO
+	IF (_iAxisActive[i] = GroupId) AND_THEN _ipAxes[i].MoveRelative(Position, TRUE) THEN
+		;
+	END_IF
+END_FOR*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Resetting" Id="{3630420c-a723-4ae5-8cbc-b5f5ab61f415}" FolderPath="Acting States\">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Resetting state*)
+METHOD PROTECTED Resetting
+VAR
+	i	  : INT;
+	count : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // 9.e. Enable only the Locally controlled axes
+		FOR i := 1 TO GVL_Axes.MAX_AXES DO
+			IF _ipLocalAxes[i] <> 0 THEN
+				_ipLocalAxes[i].Enable();
+			END_IF
+		END_FOR
+
+		SequenceState := SequenceState + 10;
+
+	20:
+		count := 0;
+		FOR i := 1 TO GVL_Axes.MAX_AXES DO
+			// 9.e. loop through all axes, but only check the status of the locally controlled axes
+			IF (_ipLocalAxes[i] <> 0) AND_THEN _ipLocalAxes[i].Enabled THEN
+				count := count + 1;
+			END_IF
+		END_FOR
+
+		IF (count = NumberOfLocalAxes) THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Resetting();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Machine" Id="{8b1e344a-67f4-4ac0-acc9-f85d1bd9c057}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
+VAR
+	LeftPress  : Press := (Name := 'Left Press', GroupId := 0);	 //4. GroupId used to match up with AxisAssignment
+	RightPress : Press := (Name := 'Right Press', GroupId := 1); //4. GroupId used to match up with AxisAssignment
+
+	//
+	AxisAssignment : ARRAY[1..GVL_AXES.MAX_AXES] OF INT;
+
+	//
+	HMI : ST_Machine_HMI;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{dc272a52-cbda-4c9d-9bb4-d1778504f1bd}" />
+    <Folder Name="CyclicLogic" Id="{7dd02334-f591-4752-9bf4-7b719aade17c}" />
+    <Folder Name="Initialize" Id="{63354e98-63d6-4ba5-9878-a8ec70c17a07}" />
+    <Folder Name="Waiting States" Id="{165ef01e-3862-40dc-a9cd-c9c81cb74308}" />
+    <Method Name="Clearing" Id="{520ca38d-f422-408c-a0e6-b1e66da495b2}" FolderPath="Acting States\">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Clearing state*)
+METHOD PROTECTED Clearing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// 8.b. This will pass the radio button selections to each EM.
+LeftPress.ActiveAxes  := AxisAssignment;
+RightPress.ActiveAxes := AxisAssignment;
+
+//
+SUPER^.Clearing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{f22d268b-ccea-498c-9d8f-56a8731d21aa}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[METHOD CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{1615e559-0337-4d00-8934-af1bba18f39c}" FolderPath="Waiting States\">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Execute state*)
+METHOD PROTECTED Execute]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		IF HMI.Cmd.MoveAll THEN
+			HMI.Cmd.MoveAll := FALSE;
+			LeftPress.MoveAll(100.0);
+			RightPress.MoveAll(-100.0);
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HMIPermissions" Id="{0f3a45a6-4cb0-4028-82cc-2e96d0c70c99}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[(* Automatically enables and disables HMI control based on the PackML mode*)
+METHOD PROTECTED HMIPermissions]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{007542e4-7de5-4f40-a8e0-a816e4fa97a1}" FolderPath="Initialize\">
+      <Declaration><![CDATA[(* Basic module initialization logic*)
+METHOD PROTECTED Initialize : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterSubmodule(SubModule := LeftPress);
+		RegisterSubmodule(SubModule := RightPress);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	20:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

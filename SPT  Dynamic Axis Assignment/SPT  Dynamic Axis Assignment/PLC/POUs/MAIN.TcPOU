@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{ea63a531-43ab-4337-a4cc-bc441a1cee9a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.
+
+(*
+	This sample code shows how an axis component can be dynamically (re)assigned to an Equipment Module.
+	1. The axis components are declared as global variables.
+	2. Each Equipment Module that will have access to the axis components has an array of interfaces of type I_BasicAxis.
+		This interface will be used for accessing the methods and properties of the axis.
+	3. Each Equipment Module has an array of I_ComponentBase.
+		This interface will be used to register the axis component with the Equipment Module.
+	4. The Press Equipment Module has a VAR_INPUT for GroupID that is assigned when the EM is declared in Machine
+			LeftPress  : Press := (Name := 'Left Press', GroupID := 0);
+			RightPress : Press := (Name := 'Right Press', GroupID := 1);
+	5. The Press.Initialize method registers the proper axis components to the Press EM
+		a. Each GVL_Axes.Axis is assigned to the local _ipGlobalAxes array
+		b. Using __QueryInterface each _ipGlobalAxes is cast to its _ipComponent interface
+		c. If the _iAxisActive is equal to the GroupID, then the Component is registered to the EM
+			Note: Initially the _iAxisActive array will be all 0s, and the GroupId for the Left Press is also 0
+	6. After the first Initialization is complete all axes are now components of the LeftPress EM
+	7. When the state machine of a Press EM reaches the Clearing state, all of the components are cleared and reassigned as configured
+		a. _InitComplete is set to FALSE and the ipComponents array is set to 0
+			This will cause the Initialize method to be run again the next time CyclicLogic is called.
+			With the ipComponents array filled with 0s all components will be registered again.
+		b. When processing the Initialize method this time it is important that the _iAxisActive array now holds the GroupId that each axis should be assigned to.
+		c. It is required that the SUPER^.Clearing method not be called until after the Initialization has been completed, otherwise a page fault will occur.
+			To protect from this the SUPER^.Clearing method is called only when the _InitComplete is TRUE
+		d. Because we are processing both the Initialize and the Clearing methods at the same time we must be aware of the hazard for parallel use of the (Descendent)SequenceState
+			variable. Normally this is not a concern, but the Initialize method in the base class is using the SequenceState variable,
+			and the Initialize method of the Press EM is using the DescendentSequenceState variable. 
+			Therefore, if we were to use either of these in Clearing then we would create a condition where the two CASE statements are both modifying the value of the CASE 
+			selection variable. As a remedy the variable ClearingState has been declared as a local variable in the Press EM. This variable is set to 0 in the Aborting method.  
+	8. For this sample radio buttons have been added to a Visu that will allow each axis to be assigned to either the Left or Right Press EM.
+		a. The radio buttons are assigned to the variable MAIN.Machine.AxisAssignment[X], where x is replaced by the Axis number to be assigned.
+			Using a radio button ensures that an axis can only be assigned to a single EM.
+			The radio buttons will write an INT value to the selected variable, in this situation the value written by the radio button matches with the GroupId
+		b. In Machine.Clearing the ActiveAxes property of both LeftPress and RightPress are set to the AxisAssignment. This will pass the radio button selections to each EM.
+		c. In the ActiveAxes.Set _iAxisActive is popluated with the data.
+		d. Now when the Initialize method is run during Clearing, each axis will be assigned to an EM based on the selected radio button. 
+	9. Enabling and Controlling the correct axes
+		a. Commands for all axes can be accessed throught the _ipGlobalAxes array, however this can be dangerous and should not be done.
+		b. An array of _ipLocalAxes is declared in the Press EM that will hold the address of the proper GLV_Axes.Axis for the EM.
+		c. In the Initialize method the array of _ipLocalAxes is set to 0 along with the NumberOfLocalAxes
+		d. When all checks have passed and a component is registerd the _ipLocalAxes[i] is assigned to the value of the _ipGlobalAxes[i],
+			and the NumberOfLocalAxes is increased by 1. This ensures that the list of _ipLocalAxes only contains the addresses of the GVL_Axes that are controlled by this EM.
+		e. In the Resetting method the axes are enabled. The FOR loop is from 1 to GVL_Axes.MAX_AXES and the code checks that the _ipLocalAxes[i] is not 0 before issuing a commnd.
+	10. To operate this sample:
+		a. Use the Visu to assign each axis to either the Left or Right Press EM.
+		b. If not in the state Aborted, issue the Abort command with the Abort button
+		c. Press the Clear button
+			Once the state machine is in Stopped you can check the LeftPress or RightPress local variable declaration and expand the ipComponents array
+			The number of indexes with values should match the number of axes configured in the Visu.
+			If you expand an item in the array you will see the details of that item.
+			Note: this array is different from the _ipComponent array that is used in the Initialize method for registering the components, that array should always be full.
+		d. Continue to move the state machine to Execute
+		e. Press the Move All button and the axes assigned to the Left Press will move forward by 100, and the axes assigned to the Right Press will be in Reverse by 100.
+		f. Return to step 9a and repeat the process with a different axis configuration.	
+			
+*)
+
+// For Debug Only
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
+Machine.CyclicLogic();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

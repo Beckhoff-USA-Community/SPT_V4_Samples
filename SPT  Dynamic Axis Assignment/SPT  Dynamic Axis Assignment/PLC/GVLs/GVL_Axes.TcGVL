@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Axes" Id="{629b614c-b48f-44cc-a574-42717181726e}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	// 1. Axes available for control by EMs
+	Axis : ARRAY[1..MAX_AXES] OF FB_Component_BasicAxis;
+END_VAR
+
+VAR_GLOBAL CONSTANT
+	MAX_AXES : INT := 10;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
