@@ -9,7 +9,7 @@
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>PLC</Name>
-    <ProgramVersion>3.1.4026.15</ProgramVersion>
+    <ProgramVersion>3.1.4026.16</ProgramVersion>
     <Application>{d9aa617b-6565-42bd-b655-0590ada9eec8}</Application>
     <TypeSystem>{b2d28940-fb49-4c50-b078-b127b1bd3087}</TypeSystem>
     <Implicit_Task_Info>{facc6359-c4d6-44f8-b0ba-6ce343236859}</Implicit_Task_Info>
@@ -22,25 +22,25 @@
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\EquipmentModules\FB_MainDrive.TcPOU">
+    <Compile Include="Modules\01 Main Drive\MainDrive.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\EquipmentModules\FB_Station1.TcPOU">
+    <Compile Include="Modules\00 Machine\Machine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\EquipmentModules\FB_Station2.TcPOU">
+    <Compile Include="Modules\02 Station 1\Station1.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\EquipmentModules\FB_Station3.TcPOU">
+    <Compile Include="Modules\03 Station 2\Station2.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\EquipmentModules\FB_Station4.TcPOU">
+    <Compile Include="Modules\04 Station 3\Station3.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\EquipmentModules\FB_Station5.TcPOU">
+    <Compile Include="Modules\05 Station 4\Station4.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Machine\MachineModule\FB_Machine.TcPOU">
+    <Compile Include="Modules\06 Station 5\Station5.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
@@ -62,9 +62,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Machine" />
-    <Folder Include="Machine\MachineModule" />
-    <Folder Include="Machine\EquipmentModules" />
+    <Folder Include="Modules" />
+    <Folder Include="Modules\00 Machine" />
+    <Folder Include="Modules\01 Main Drive" />
+    <Folder Include="Modules\02 Station 1" />
+    <Folder Include="Modules\03 Station 2" />
+    <Folder Include="Modules\04 Station 3" />
+    <Folder Include="Modules\05 Station 4" />
+    <Folder Include="Modules\06 Station 5" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
@@ -216,10 +221,10 @@
   </ItemGroup>
   <ItemGroup>
     <PlaceholderResolution Include="SPT Base Types">
-      <Resolution>SPT Base Types, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Base Types, 4.0.1 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Components">
-      <Resolution>SPT Components, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Components, 4.0.2 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Diagnostic">
       <Resolution>SPT Diagnostic, 4.0.0 (Beckhoff Automation LLC)</Resolution>
@@ -234,7 +239,7 @@
       <Resolution>SPT Kinematics, 4.0.0 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Motion Control">
-      <Resolution>SPT Motion Control, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Motion Control, 4.0.1 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT NCI">
       <Resolution>SPT NCI, 4.0.0 (Beckhoff Automation LLC)</Resolution>
@@ -384,7 +389,10 @@
         <o>
           <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
           <d n="SubKeys" t="Hashtable" />
-          <d n="Values" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>CalcActiveTransOnly</v>
+            <v>True</v>
+          </d>
         </o>
       </d>
       <d n="Values" t="Hashtable" />

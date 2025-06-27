@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_MainDrive" Id="{26d642ce-310a-47dd-8933-8cfb4c97a9f3}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_MainDrive EXTENDS FB_PackML_BaseModule
+  <POU Name="MainDrive" Id="{26d642ce-310a-47dd-8933-8cfb4c97a9f3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK MainDrive EXTENDS FB_PackML_BaseModule
 VAR
 	MachineVirtualAxis : FB_Component_BasicAxis := (Name := 'Machine Virtual Axis');
 	_StartCommand	   : BOOL;

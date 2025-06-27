@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_Station4" Id="{385868b0-e0df-4481-b79c-b9d6f1ed6542}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Station4 EXTENDS FB_PackML_BaseModule
+  <POU Name="Station4" Id="{385868b0-e0df-4481-b79c-b9d6f1ed6542}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Station4 EXTENDS FB_PackML_BaseModule
 VAR
 	VirtualOffsetMasterAxis : FB_Component_BasicAxis	  := (Name := 'Station 4 Virtual Offset Master Axis');
 	OffsetAxis				: FB_Component_BasicSlaveAxis := (Name := 'Station 4 Offset Axis');

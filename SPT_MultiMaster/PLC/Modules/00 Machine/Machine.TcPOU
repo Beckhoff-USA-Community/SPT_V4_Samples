@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_Machine" Id="{7ccbae2a-e009-4d31-97d8-45ba313d1efb}" SpecialFunc="None">
+  <POU Name="Machine" Id="{7ccbae2a-e009-4d31-97d8-45ba313d1efb}" SpecialFunc="None">
     <Declaration><![CDATA[{attribute 'no_explicit_call' := 'This FB is a CLASS and must be accessed using methods or properties'}
-FUNCTION_BLOCK FB_Machine EXTENDS FB_PackML_BaseModule
+FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
 VAR
-	MainDrive : FB_MainDrive := (Name := 'Main Drive');
-	Station1  : FB_Station1	 := (Name := 'Fixed Gear Ratio');
-	Station2  : FB_Station2	 := (Name := 'Variable Gear Ratio');
-	Station3  : FB_Station3	 := (Name := 'Cam Table');
-	Station4  : FB_Station4	 := (Name := '2nd Master for Offset');
-	Station5  : FB_Station5	 := (Name := '2nd Master for Offset and Cam Table');
+	MainDrive : MainDrive := (Name := 'Main Drive');
+	Station1  : Station1	 := (Name := 'Fixed Gear Ratio');
+	Station2  : Station2	 := (Name := 'Variable Gear Ratio');
+	Station3  : Station3	 := (Name := 'Cam Table');
+	Station4  : Station4	 := (Name := '2nd Master for Offset');
+	Station5  : Station5	 := (Name := '2nd Master for Offset and Cam Table');
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[(*
@@ -29,6 +29,9 @@ END_VAR]]></Declaration>
 	_InitComplete := Initialize();
 	RETURN;
 END_IF
+
+
+
 
 SUPER^.CyclicLogic();]]></ST>
       </Implementation>

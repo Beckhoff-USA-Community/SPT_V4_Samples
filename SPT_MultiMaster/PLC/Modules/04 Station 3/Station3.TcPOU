@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_Station3" Id="{6750d947-a453-404d-903c-2263c894ef74}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Station3 EXTENDS FB_PackML_BaseModule
+  <POU Name="Station3" Id="{6750d947-a453-404d-903c-2263c894ef74}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Station3 EXTENDS FB_PackML_BaseModule
 VAR
 	VirtualCammedAxis : FB_Component_CamSlaveAxis	:= (Name := 'Station 3 Virtual Cammed Axis');
 	CammedAxis		  : FB_Component_BasicSlaveAxis := (Name := 'Station 3 Cammed Axis');
@@ -250,8 +250,10 @@ END_CASE]]></ST>
 				END_IF
 
 			100: // Couple to Cam table with Master axis
-				IF VirtualCammedAxis.StartSync() THEN
-					SequenceState := SequenceState + 10;
+				IF VirtualCammedAxis.WaitingForCommand THEN
+					IF VirtualCammedAxis.StartSync() THEN
+						SequenceState := SequenceState + 10;
+					END_IF
 				END_IF
 
 			110:

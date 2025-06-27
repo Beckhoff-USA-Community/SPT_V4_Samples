@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_Station1" Id="{474cc68a-70a5-477f-abea-956f8e070d1b}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Station1 EXTENDS FB_PackML_BaseModule
+  <POU Name="Station1" Id="{474cc68a-70a5-477f-abea-956f8e070d1b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Station1 EXTENDS FB_PackML_BaseModule
 VAR
 	FixedAxis  : FB_Component_BasicSlaveAxis := (Name := 'Station 1 Fixed Axis');
 	_MasterRef : REFERENCE TO AXIS_REF;
