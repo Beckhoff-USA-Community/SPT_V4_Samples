@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Machine" Id="{7a2e82de-2dcb-4641-aa72-4e2d4ac112c5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
+VAR
+	Infeed			 : Infeed := (Name := 'Infeed');
+	_ErrorSeverity	 : INT := 2;
+	_WarningSeverity : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="ChangeAlarmSeverity" Id="{5c4d790f-1818-4583-be7c-2f4ef0cea924}">
+      <Declaration><![CDATA[METHOD ChangeAlarmSeverity
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _WarningSeverity OF
+	0:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.NoResponse;
+
+	1:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.Abort_Immediate;
+
+	2:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.Abort_ImmediateError;
+END_CASE
+
+CASE _ErrorSeverity OF
+	0:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.NoResponse;
+
+	1:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_Immediate;
+
+	2:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_ImmediateError;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{7aa76925-dfc9-4125-be58-fe4fbc1e0deb}">
+      <Declaration><![CDATA[METHOD CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+//
+ChangeAlarmSeverity();
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HMIPermissions" Id="{ff8d6508-6554-4fb9-8df8-bc3ed3c8b07d}">
+      <Declaration><![CDATA[(* Automatically enables and disables HMI control based on the PackML mode*)
+METHOD PROTECTED HMIPermissions
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{c3f85e9e-2439-4e0f-9afb-3d0d0f22b3a8}">
+      <Declaration><![CDATA[(* Basic module initialization logic*)
+METHOD PROTECTED Initialize : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		LogModeChanges	:= FALSE;
+		LogStateChanges := FALSE;
+
+		//
+		RegisterSubmodule(SubModule := Infeed);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_ImmediateError;
+		DescendantSequenceState								   := DescendantSequenceState + 10;
+
+	20:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

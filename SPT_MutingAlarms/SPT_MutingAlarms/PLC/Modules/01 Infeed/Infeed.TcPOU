@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Infeed" Id="{6793c46e-9e07-4423-a2be-ad6f20c2f734}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Infeed EXTENDS FB_PackML_BaseModule
+VAR
+	Component		 : Component := (Name := 'Component');
+	InfeedAlarms	 : ARRAY[1..INFEED_ALARM_COUNT] OF FB_TcAlarm;
+	testError		 : BOOL;
+	_ErrorSeverity	 : INT := 2;
+	_WarningSeverity : INT;
+END_VAR
+
+VAR CONSTANT
+	INFEED_ALARM_COUNT : UDINT := 6; //First is InitReferenceEvent
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="ChangeAlarmSeverity" Id="{c7461ce3-9ea4-4ed4-81e5-76c82b6da4ce}">
+      <Declaration><![CDATA[METHOD ChangeAlarmSeverity
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _WarningSeverity OF
+	0:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.NoResponse;
+
+	1:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.Abort_Immediate;
+
+	2:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.Abort_ImmediateError;
+END_CASE
+
+CASE _ErrorSeverity OF
+	0:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.NoResponse;
+
+	1:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_Immediate;
+
+	2:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_ImmediateError;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clearing" Id="{42adf519-aa2a-48f8-93ec-12526c6718b7}">
+      <Declaration><![CDATA[METHOD PROTECTED Clearing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_ClearAllEventsInClass(Alarms := InfeedAlarms);
+SUPER^.Clearing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CreateEvents" Id="{eea28418-6ca6-4d83-b6be-5709c1312f62}">
+      <Declaration><![CDATA[(* Initializes event function blocks using this module's name*)
+METHOD PROTECTED CreateEvents
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_CreateAllEventsInClass(Alarms		:= InfeedAlarms,
+						 ClassSize	:= SIZEOF(TC_Events.Events_Infeed),
+						 pInitEvent := ADR(TC_EVENTS.Events_Infeed.InitReferenceEvent),
+						 Prefix		:= Name);
+
+SUPER^.CreateEvents();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{75d055b1-1b2a-4078-b722-8d0e4f2b0246}">
+      <Declaration><![CDATA[METHOD CyclicLogic
+
+VAR
+	i: UDINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+//
+ChangeAlarmSeverity();
+EventMonitor();
+SUPER^.CyclicLogic();
+
+(*
+*
+*		Code must be after SUPER^.CyclicLogic();
+*
+*)
+
+(* Update alarm severity from this module *)
+_CurrentAlarmSeverity := F_GetMaxSeverityRaised(Alarms := InfeedAlarms, CurrentSeverity := _CurrentAlarmSeverity);
+
+(* // Add this code to set the _CurrentAlarmSeverity for this EM to match the highest _CurrentAlarmSeverity of its Components.
+	//Update alarm severity for this module to match the highest EventSeverity of all Components
+	FOR i := 1 TO NumberOfComponents DO
+		IF ipComponents[i].CurrentAlarmSeverity >= TcEventSeverity.Error THEN
+			_CurrentAlarmSeverity := TcEventSeverity.Error;
+			END_IF
+	END_FOR
+*)
+
+//
+_Error := _CurrentAlarmSeverity >= TcEventSeverity.Error;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EventMonitor" Id="{64606b74-f88b-47be-b767-73d2dfbe3dc7}">
+      <Declaration><![CDATA[METHOD EventMonitor
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF testError AND_THEN NOT InfeedAlarms[E_Events_Infeed.Error].bRaised THEN
+	RaiseAlarm2Args(InfeedAlarms[E_Events_Infeed.Error], 'Note 1', 'Note 2');
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{78303349-08ee-4790-98d3-aff3f2b7c318}">
+      <Declaration><![CDATA[(* Basic module initialization logic*)
+METHOD PROTECTED Initialize : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		LogModeChanges	:= FALSE;
+		LogStateChanges := FALSE;
+
+		//
+		RegisterComponent(Component := Component);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.NoResponse;
+		_ParentFaultResponseDefinitions[TcEventSeverity.Error]	 := E_AlarmResponse.Abort_Immediate;
+		DescendantSequenceState									 := DescendantSequenceState + 10;
+
+	20:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RaiseAlarm2Args" Id="{f74b26f3-a272-420e-93a0-03bbfe7c0028}">
+      <Declaration><![CDATA[METHOD RaiseAlarm2Args
+VAR_IN_OUT
+	Alarm : FB_TcAlarm; //Alarm to be raised
+END_VAR
+
+VAR_INPUT
+	String_1 : STRING; //First String Parameter (The Name of this component will be applied first automatically)
+	String_2 : STRING; //Second String Parameter
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_RaiseAlarmWithStringParameters(Alarm	  := Alarm,
+								 String_1 := Name,
+								 String_2 := String_1,
+								 String_3 := String_2);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

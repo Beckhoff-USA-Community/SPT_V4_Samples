@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{08c8a5b2-6d18-4da3-8427-4ee6694183da}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Machine : Machine := (Name := 'Machine');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.
+
+//
+Machine.CyclicLogic();
+
+(*
+	This sample demonstrates the reactions of the state machine based on the _ParentFaultResponseDefinitions.
+	
+The _ParentFaultResponseDefinitions exists for all inherited classes of FB_PackML_BaseModule and FB_ComponentBase.
+This allows for the class that raises the Error to dictate the response of the upper-level code (EM or MM) that is monitoring it.
+                
+When an event happens, it will be logged in the Error List of the IDE under Errors, Warnings, or Messages.
+The _ParentFaultResponseDefinitions for each specific TcEventSeverity will determine how the upper-level Parent Module will respond.
+                
+The default response for TcEventSeverity.Error and TcEventSeverity.Critical is E_AlarmResponse.Abort_ImmediateError.
+This will cause the Parent Module to command itself into the Aborting state and also raise an error that will set its own _CurrentAlarmSeverity to Error.
+This in turn will result in its Parent Module repeating the process of logging an error, issuing itself an Abort command and setting its own _CurrentAlarmSeverity to Error.
+
+
+If a Component set its _ParentFaultResponseDefinitions[TcEventSeverity.Error] to E_AlarmResponse.Abort_Immediate then its Parent Module will not log an error, 
+but instead log a warning, set its _CurrentAlarmSeverity to Warning and issue itself an Abort command.
+
+Because the default response to a Warning is NoResponse the Machine Module will not respond to the parent module of the faulted component having a _CurrentAlarmSeverity of Warning.
+	
+	
+If you want the MM to Abort along with the EM when a Component raises an Error you must control the value of _CurrentAlarmSeverity. 
+
+	In the CyclicLogic method of the MM the _CurrentAlarmSeverity is updated by the following:
+		1.	Super^.CyclicLogic resets the _CurrentAlarmSeverity to Verbose
+		2.	_CurrentAlarmSeverity is updated based on the Alarms of the EM
+	
+	Code can be added to update the _CurrentAlarmSeverity of the EM based on the _CurrentAlarmSeverity of its Components
+	Set _ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_Immediate; for the EM and the Components 
+	Then add the code to the CyclicLogic to read the _CurrentAlarmSeverity of the Components of the EM, this will give an Error message only for the Component that raises an Error, but still cause the EM and MM to go into Abort.
+	See the Infeed.CyclicLogic() method for an example.
+
+
+Using the Visu to test reactions:
+	
+The Warning and Error definitions are set to their defaults on startup, for the MM, EM, and Component
+
+_ParentFaultResponseDefinitions[TcEventSeverity.Warning] := E_AlarmResponse.NoResponse;
+_ParentFaultResponseDefinitions[TcEventSeverity.Error] := E_AlarmResponse.Abort_ImmediateError;
+
+The Visualization provides buttons to toggle an Error. When the error is raised the state machine of the EM and MM will respond according to the selected _ParentFaultResponseDefinitions.
+
+Default Configuration:
+The default response is for the Component log its error and set its CurrentSeverity to Error. 
+The EM is monitoring the Component and will respond to the CurrentSeverity of Error by changing its State Command to Abort.
+The EM will log the error and set its CurrentSeverity to Error.
+The MM is monitoring the EM and will respond to the CurrentSeverity of Error by changing its State Command to Abort.
+The MM will log the error and set its CurrentSeverity to Error.
+
+This causes a single error in a component to generate 3 messages in the Error List.
+
+Muting Component Errors:
+If the _ParentFaultResponseDefinitions[TcEventSeverity.Error] for the Component is changed from E_AlarmResponse.Abort_ImmediateError to E_AlarmResponse.Abort_Immediate
+then the EM that is monitoring the Component will set its Current Severity to Warning and only the Component will log an error.
+The EM will abort becuase its Component has an Error, but the MM will not abort because its EM's Current Severity is Warning.
+
+If the 	_ParentFaultResponseDefinitions[TcEventSeverity.Error] for the Component is set to E_AlarmResponse.NoResponse
+then the Component will log its error and set its Current Severity to Error. But the EM will not respond, change its state or its CurrentSeverity.
+
+If the	_ParentFaultResponseDefinitions[TcEventSeverity.Error] for the Component is left at E_AlarmResponse.Abort_ImmediateError
+and the _ParentFaultResponseDefinitions[TcEventSeverity.Error] for the EM is set to E_AlarmResponse.Abort_Immediate
+then the Component and EM will both write to the log, and both 'Parents' (EM and MM) will Abort.
+	
+
+
+*)]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
