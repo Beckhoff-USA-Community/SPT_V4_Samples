@@ -33,6 +33,7 @@ _Repository/
 !ComponentEvents.tmc
 !EquipmentEvents.tmc
 !MachineEvents.tmc
+!Events*.tmc
 
 
 .engineering_servers/
