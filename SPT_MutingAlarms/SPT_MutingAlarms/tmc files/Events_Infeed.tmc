@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<TcModuleClass>
+	<DataTypes>
+		<DataType>
+			<Name GUID="{54A30CD5-3CD8-4D60-98A9-60B4E30F072F}">Events_Infeed</Name>
+			<DisplayName TxtId=""><![CDATA[Events_Infeed]]></DisplayName>
+			<EventId>
+				<Name Id="1">InitReferenceEvent</Name>
+				<DisplayName TxtId=""><![CDATA[InitReferenceEvent]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="2">Verbose</Name>
+				<DisplayName TxtId=""><![CDATA[Verbose]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="3">Info</Name>
+				<DisplayName TxtId=""><![CDATA[Info]]></DisplayName>
+				<Severity>Info</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="4">Warning</Name>
+				<DisplayName TxtId=""><![CDATA[Warning]]></DisplayName>
+				<Severity>Warning</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="5">Error</Name>
+				<DisplayName TxtId=""><![CDATA[Error]]></DisplayName>
+				<Severity>Error</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="6">Critical</Name>
+				<DisplayName TxtId=""><![CDATA[Critical]]></DisplayName>
+				<Severity>Critical</Severity>
+			</EventId>
+		</DataType>
+	</DataTypes>
+</TcModuleClass>
