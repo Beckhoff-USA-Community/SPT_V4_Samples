@@ -7,8 +7,7 @@ VAR_INPUT
 END_VAR
 
 VAR
-	_ipGlobalAxes	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_BasicAxis;		// 2. Interface to be assigned to a Globally declared axis
-	_ipComponent	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_ComponentBase; // 3. Interface to be used for RegisterComponent
+	_ipGlobalAxes	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_BasicAxis; // 2. Interface to be assigned to a Globally declared axis
 	_iAxisActive	  : ARRAY[1..GVL_Axes.MAX_AXES] OF INT;
 	_ipLocalAxes	  : ARRAY[1..GVL_Axes.MAX_AXES] OF I_BasicAxis; // 9.b. Hold the addresses of the active GLV_Axes.Axis for the EM
 	NumberOfLocalAxes : INT;
@@ -95,7 +94,8 @@ SUPER^.CyclicLogic();]]></ST>
       <Declaration><![CDATA[(* Basic module initialization logic*)
 METHOD PROTECTED Initialize : BOOL
 VAR
-	i : INT;
+	i			 : INT;
+	_ipComponent : I_ComponentBase; // 3. Interface to be used for RegisterComponent
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[Initialize := FALSE;
@@ -116,10 +116,10 @@ CASE DescendantSequenceState OF
 		NumberOfLocalAxes := 0; // 9.c. Set the count to 0
 		FOR i := 1 TO GVL_Axes.MAX_AXES DO
 			// 5.b. Using __QueryInterface each _ipAxis is cast to its _ipComponent interface
-			IF __QUERYINTERFACE(_ipGlobalAxes[i], _ipComponent[i]) THEN
+			IF __QUERYINTERFACE(_ipGlobalAxes[i], _ipComponent) THEN
 				// 5.c. 7.b. 8.d. If the _iAxisActive is equal to the GroupID, then the Component is registered to the EM
 				IF (_iAxisActive[i] = GroupId) THEN
-					RegisterComponent(Component := _ipComponent[i]);
+					RegisterComponent(Component := _ipComponent);
 
 					// 9.d. Copy the address from the Global to the Local to issue commands and check status of axes assigned to this EM only
 					_ipLocalAxes[i]	  := _ipGlobalAxes[i];

@@ -13,7 +13,7 @@ END_VAR]]></Declaration>
 	1. The axis components are declared as global variables.
 	2. Each Equipment Module that will have access to the axis components has an array of interfaces of type I_BasicAxis.
 		This interface will be used for accessing the methods and properties of the axis.
-	3. Each Equipment Module has an array of I_ComponentBase.
+	3. A local instance I_ComponentBase is assigned using QueryInterface.
 		This interface will be used to register the axis component with the Equipment Module.
 	4. The Press Equipment Module has a VAR_INPUT for GroupID that is assigned when the EM is declared in Machine
 			LeftPress  : Press := (Name := 'Left Press', GroupID := 0);
