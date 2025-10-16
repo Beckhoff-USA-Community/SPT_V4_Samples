@@ -70,29 +70,9 @@
       <DefaultResolution>SPT Event Logger, * (Beckhoff Automation LLC)</DefaultResolution>
       <Namespace>SPT_EventLogger</Namespace>
     </PlaceholderReference>
-    <PlaceholderReference Include="SPT Kinematics">
-      <DefaultResolution>SPT Kinematics, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_Kinematics</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT Motion Control">
-      <DefaultResolution>SPT Motion Control, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_Motion_Control</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT NCI">
-      <DefaultResolution>SPT NCI, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_NCI</Namespace>
-    </PlaceholderReference>
     <PlaceholderReference Include="SPT Utilities">
       <DefaultResolution>SPT Utilities, * (Beckhoff Automation LLC)</DefaultResolution>
       <Namespace>SPT_Utilities</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT Vision">
-      <DefaultResolution>SPT Vision, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_Vision</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT XTS">
-      <DefaultResolution>SPT XTS, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_XTS</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="System_VisuElemMeter">
       <DefaultResolution>VisuElemMeter, 4.7.0.0 (System)</DefaultResolution>
@@ -165,44 +145,32 @@
   </ItemGroup>
   <ItemGroup>
     <PlaceholderResolution Include="SPT Base Types">
-      <Resolution>SPT Base Types, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Base Types, 4.0.3 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Components">
-      <Resolution>SPT Components, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Components, 4.0.3 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Diagnostic">
-      <Resolution>SPT Diagnostic, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Diagnostic, 4.0.1 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT EtherCat">
-      <Resolution>SPT EtherCat, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT EtherCat, 4.0.1 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Event Logger">
       <Resolution>SPT Event Logger, 4.0.0 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
-    <PlaceholderResolution Include="SPT Kinematics">
-      <Resolution>SPT Kinematics, 4.0.0 (Beckhoff Automation LLC)</Resolution>
-    </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Motion Control">
       <Resolution>SPT Motion Control, 4.0.0 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
-    <PlaceholderResolution Include="SPT NCI">
-      <Resolution>SPT NCI, 4.0.0 (Beckhoff Automation LLC)</Resolution>
-    </PlaceholderResolution>
     <PlaceholderResolution Include="SPT Utilities">
-      <Resolution>SPT Utilities, 4.0.0 (Beckhoff Automation LLC)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="SPT Vision">
-      <Resolution>SPT Vision, 4.0.0 (Beckhoff Automation LLC)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="SPT XTS">
-      <Resolution>SPT XTS, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+      <Resolution>SPT Utilities, 4.0.2 (Beckhoff Automation LLC)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
