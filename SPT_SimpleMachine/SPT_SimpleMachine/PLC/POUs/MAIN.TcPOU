@@ -14,10 +14,15 @@ END_VAR]]></Declaration>
 	
 	The HMIPermissions method is required to allow the Visu to control the state machine through the PackMLBaseModule_HMI structure.
 	
-	All libraries in this project are pinned at V3.9.x
+	All libraries in this project are pinned at V4.x
 	While only the SPT Base Types library is used, the others are provided for your convenience.
 	
 *)
+
+// For Debug Only
+_AppInfo.KeepOutputsOnBP := TRUE;
+
+//
 Machine.CyclicLogic();]]></ST>
     </Implementation>
   </POU>
