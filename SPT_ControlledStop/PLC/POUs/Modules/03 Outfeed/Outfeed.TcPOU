@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="OutfeedModule" Id="{217672e2-776d-43db-a4bd-00471447b980}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK OutfeedModule EXTENDS FB_PackML_BaseModule
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="Outfeed" Id="{217672e2-776d-43db-a4bd-00471447b980}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Outfeed EXTENDS FB_PackML_BaseModule
 VAR
 	testComplete : BOOL;
 END_VAR]]></Declaration>

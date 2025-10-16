@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="SampleComponent" Id="{39de7197-1fb6-432b-8c8b-27fa514d4256}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK SampleComponent EXTENDS FB_ComponentBase
 VAR

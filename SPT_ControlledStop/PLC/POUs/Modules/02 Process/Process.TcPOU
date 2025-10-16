@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="ProcessModule" Id="{046809f4-f19d-40ee-b5ff-f58884637d42}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK ProcessModule EXTENDS FB_PackML_BaseModule
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="Process" Id="{046809f4-f19d-40ee-b5ff-f58884637d42}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Process EXTENDS FB_PackML_BaseModule
 VAR
 	Component : SampleComponent := (Name := 'Sample Component');
 

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="MAIN" Id="{b9936adb-4dbb-49cf-b576-117765b52c61}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -83,8 +83,8 @@ Machine.CyclicLogic()
 
 
 To run the test:
-1. Toggle resetStateMachine in MAIN - this will place the MM and all EMs in Production-Execute
-2. Verify that all EMs are in Production-Execute
+1. Use the Visu to place the MM into Execute
+2. Use the Visu to Verify that all EMs are in Production-Execute
 3. Toggle testError in SampleComponent.Monitoring()
 4. Verify that the Process Module is in Stopped, and note that the other EMs are still in Production-Execute
 5. Toggle testComplete in OutfeedModule.CyclicLogic()

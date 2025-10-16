@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="Machine" Id="{8fa7ef26-a4f9-420b-833f-0f9ff62a8657}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
 VAR
 	//EMs
-	Infeed	: InfeedModule	:= (Name := 'Infeed');
-	Process : ProcessModule := (Name := 'Process');
-	Outfeed : OutfeedModule := (Name := 'Outfeed');
+	Infeed	: Infeed  := (Name := 'Infeed');
+	Process : Process := (Name := 'Process');
+	Outfeed : Outfeed := (Name := 'Outfeed');
 
 	//
 	_StopRequestFromEM : BOOL;
