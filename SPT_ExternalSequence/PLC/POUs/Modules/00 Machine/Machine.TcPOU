@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_Machine" Id="{b5457780-1c44-4e83-aa46-5485e68808f8}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Machine EXTENDS FB_PackML_BaseModule
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="Machine" Id="{b5457780-1c44-4e83-aa46-5485e68808f8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
 VAR
 	VAxis		  : FB_Component_BasicAxis := (Name := 'V Axis');
-	RevSequence	  : FB_ReversingSequence;
+	RevSequence	  : ReversingSequence;
 	startRevSeq	  : BOOL;
 	stopAxis	  : BOOL;
 	moveAbs		  : BOOL;

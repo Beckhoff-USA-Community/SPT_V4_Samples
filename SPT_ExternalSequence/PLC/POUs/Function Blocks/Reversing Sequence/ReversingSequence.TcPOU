@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_ReversingSequence" Id="{9caf3fe3-21c0-4675-baef-5e228678bdb8}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_ReversingSequence EXTENDS FB_CyclicFB IMPLEMENTS I_MotionSequence
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="ReversingSequence" Id="{9caf3fe3-21c0-4675-baef-5e228678bdb8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ReversingSequence EXTENDS FB_CyclicFB IMPLEMENTS I_MotionSequence
 VAR
 	_Axis		 : I_BasicAxis;
 	_Position1	 : LREAL;

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # TcXaeShell Solution File, Format Version 11.00
-VisualStudioVersion = 15.0.33403.129
+VisualStudioVersion = 17.7.34302.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{B1E792BE-AA5F-4E3C-8C82-674BF9C0715B}") = "SPT_ExternalSequence", "SPT_ExternalSequence.tsproj", "{629CA3F5-17FA-4E62-AAC1-7BA5A7FE781E}"
 EndProject
