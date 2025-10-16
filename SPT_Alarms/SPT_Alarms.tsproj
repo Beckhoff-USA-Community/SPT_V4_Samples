@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.15">
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.19">
 	<DataTypes>
 		<DataType>
 			<Name GUID="{AC23D64B-CDFA-4D43-AE8B-364A856EB3E2}">ITcVnMlModel</Name>
@@ -1307,6 +1307,9 @@
 	</DataTypes>
 	<Project ProjectGUID="{AE41D63E-2FC6-49D4-A875-673DFB3DA302}" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
+			<Settings MaxCpus="20" NonWinCpus="4" PCoreAffinity="4095" ECoreAffinity="1044480">
+				<Cpu CpuId="19"/>
+			</Settings>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
@@ -1320,7 +1323,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{2FAF13DD-775D-4489-834B-5DE468898AC8}" Name="PLC" PrjFilePath="PLC\PLC.plcproj" TmcFilePath="PLC\PLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{16217EEF-A052-12CD-A2B4-ECB0DAD22B2B}" TmcPath="PLC\PLC.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{175270B0-F0F7-4280-438D-F47A66E2641C}" TmcPath="PLC\PLC.tmc">
 					<Name>PLC Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>

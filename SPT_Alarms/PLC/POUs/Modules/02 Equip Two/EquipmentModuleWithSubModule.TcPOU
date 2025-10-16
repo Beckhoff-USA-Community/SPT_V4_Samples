@@ -1,10 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="EquipmentModule" Id="{f2291b49-0a77-48a3-adbe-db7ae5aea497}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK EquipmentModule EXTENDS FB_PackML_BaseModule
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="EquipmentModuleWithSubModule" Id="{b852676d-4284-4c69-95b5-ce6f8883565c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK EquipmentModuleWithSubModule EXTENDS FB_PackML_BaseModule
 VAR
+	//SubModule
+	SubModule : EquipmentModule := (Name := 'SubModule of Equip Two');
+
 	//Component
-	ComponentOne	: Component := (Name := 'Component One');
+	ComponentOne	: Component := (Name := 'Component of EM with Sub');
 	EquipmentAlarms : ARRAY[1..EQUIPMENT_ALARM_COUNT] OF FB_TcAlarm;
 	testCritical	: BOOL;
 	testError		: BOOL;
@@ -19,14 +22,14 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="Clearing" Id="{42adf519-aa2a-48f8-93ec-12526c6718b7}">
+    <Method Name="Clearing" Id="{41a0aec4-ba41-46a5-9208-224d1416f190}">
       <Declaration><![CDATA[METHOD PROTECTED Clearing]]></Declaration>
       <Implementation>
         <ST><![CDATA[F_ClearAllEventsInClass(Alarms := EquipmentAlarms);
 SUPER^.Clearing();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="CreateEvents" Id="{bb8bda21-b36a-403a-b5f3-cd1c4d4d372e}">
+    <Method Name="CreateEvents" Id="{ed26f53a-e5fe-4ac1-940a-f91676605de2}">
       <Declaration><![CDATA[// Initializes event function blocks using this module's name
 METHOD PROTECTED CreateEvents
 
@@ -40,7 +43,7 @@ METHOD PROTECTED CreateEvents
 SUPER^.CreateEvents();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="CyclicLogic" Id="{ee9be657-b87f-463e-9973-25c76b94c8d3}">
+    <Method Name="CyclicLogic" Id="{c8a001b8-1229-472e-b0dd-82db4bbdeb94}">
       <Declaration><![CDATA[// This method serves as the entry point for all underlying FB logic
 METHOD PUBLIC CyclicLogic
 
@@ -52,29 +55,23 @@ METHOD PUBLIC CyclicLogic
 END_IF
 
 // AlarmHandling
-IF testVerbose AND_THEN NOT EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent].bRaised THEN
+IF testVerbose AND NOT EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent].bRaised THEN
 	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent], 'Note 1', 'Note 2');
-ELSIF NOT testVerbose AND_THEN EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent].bRaised THEN
-	EquipmentAlarms[E_EquipmentModuleEvents.VerboseEvent].Clear(0, 0);
 END_IF
 
-IF testInfo AND_THEN NOT EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent].bRaised THEN
+IF testInfo AND NOT EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent].bRaised THEN
 	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent], 'Note 1', 'Note 2');
-ELSIF NOT testInfo AND_THEN EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent].bRaised THEN
-	EquipmentAlarms[E_EquipmentModuleEvents.InfoEvent].Clear(0, 0);
 END_IF
 
-IF testWarning AND_THEN NOT EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent].bRaised THEN
+IF testWarning AND NOT EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent].bRaised THEN
 	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent], 'Note 1', 'Note 2');
-ELSIF NOT testWarning AND_THEN EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent].bRaised THEN
-	EquipmentAlarms[E_EquipmentModuleEvents.WarningEvent].Clear(0, 0);
 END_IF
 
-IF testError AND_THEN NOT EquipmentAlarms[E_EquipmentModuleEvents.ErrorEvent].bRaised THEN
+IF testError AND NOT EquipmentAlarms[E_EquipmentModuleEvents.ErrorEvent].bRaised THEN
 	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.ErrorEvent], 'Note 1', 'Note 2');
 END_IF
 
-IF testCritical AND_THEN NOT EquipmentAlarms[E_EquipmentModuleEvents.CriticalEvent].bRaised THEN
+IF testCritical AND NOT EquipmentAlarms[E_EquipmentModuleEvents.CriticalEvent].bRaised THEN
 	RaiseAlarm2Args(EquipmentAlarms[E_EquipmentModuleEvents.CriticalEvent], 'Note 1', 'Note 2');
 END_IF
 
@@ -86,12 +83,12 @@ SUPER^.CyclicLogic();
 *
 *)
 
-(* Update alarm severity from this module *)
+// Update alarm severity from this module
 _CurrentAlarmSeverity := F_GetMaxSeverityRaised(Alarms := EquipmentAlarms, CurrentSeverity := _CurrentAlarmSeverity);
 _Error				  := _CurrentAlarmSeverity >= TcEventSeverity.Error;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Initialize" Id="{7bacb92d-1c65-4128-89d7-8fc154a247aa}">
+    <Method Name="Initialize" Id="{1e4ff0b9-cf84-4ac9-b5e2-cdad958f008b}">
       <Declaration><![CDATA[// Basic module initialization logic
 METHOD PROTECTED Initialize : BOOL;
 
@@ -106,6 +103,7 @@ CASE DescendantSequenceState OF
 		//Register Submodules
 
 		//Register Components
+		RegisterSubmodule(SubModule := SubModule);
 		RegisterComponent(Component := ComponentOne);
 		DescendantSequenceState := DescendantSequenceState + 10;
 
@@ -116,7 +114,7 @@ CASE DescendantSequenceState OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="RaiseAlarm2Args" Id="{f74b26f3-a272-420e-93a0-03bbfe7c0028}">
+    <Method Name="RaiseAlarm2Args" Id="{4216941c-b743-4ec2-a005-6191ad9c7534}">
       <Declaration><![CDATA[METHOD RaiseAlarm2Args
 VAR_IN_OUT
 	Alarm : FB_TcAlarm; //Alarm to be raised

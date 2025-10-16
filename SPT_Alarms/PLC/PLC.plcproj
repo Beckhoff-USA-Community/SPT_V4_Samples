@@ -9,7 +9,7 @@
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>PLC</Name>
-    <ProgramVersion>3.1.4026.15</ProgramVersion>
+    <ProgramVersion>3.1.4026.19</ProgramVersion>
     <Application>{5030cd57-eedb-4250-89b6-c8fa71ba44bf}</Application>
     <TypeSystem>{8afa41c6-713b-47ba-95f1-e9267533dcf1}</TypeSystem>
     <Implicit_Task_Info>{555438f2-3e22-46f0-bf19-d0b19208a2f2}</Implicit_Task_Info>
@@ -28,19 +28,19 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Component.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\EquipmentModule.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\EquipmentModuleWithSubModule.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Machine.TcPOU">
+    <Compile Include="POUs\Components\Component.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\00 Machine\Machine.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\01 Equip One\EquipmentModule.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Modules\02 Equip Two\EquipmentModuleWithSubModule.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Visualization Manager.TcVMO">
@@ -54,6 +54,11 @@
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\Modules" />
+    <Folder Include="POUs\Modules\00 Machine" />
+    <Folder Include="POUs\Modules\01 Equip One" />
+    <Folder Include="POUs\Modules\02 Equip Two" />
+    <Folder Include="POUs\Components" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
@@ -258,15 +263,15 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="Int32">System.Int32</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>
