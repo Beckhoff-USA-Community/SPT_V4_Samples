@@ -9,7 +9,7 @@
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>PLC</Name>
-    <ProgramVersion>3.1.4026.16</ProgramVersion>
+    <ProgramVersion>3.1.4026.19</ProgramVersion>
     <Application>{d9aa617b-6565-42bd-b655-0590ada9eec8}</Application>
     <TypeSystem>{b2d28940-fb49-4c50-b078-b127b1bd3087}</TypeSystem>
     <Implicit_Task_Info>{facc6359-c4d6-44f8-b0ba-6ce343236859}</Implicit_Task_Info>
@@ -369,15 +369,15 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="Int32">System.Int32</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

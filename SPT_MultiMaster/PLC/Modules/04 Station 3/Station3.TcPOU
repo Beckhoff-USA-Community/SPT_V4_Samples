@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="Station3" Id="{6750d947-a453-404d-903c-2263c894ef74}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Station3 EXTENDS FB_PackML_BaseModule
 VAR
@@ -56,12 +56,12 @@ CASE SequenceState OF
 		SequenceState		   := SequenceState + 10;
 
 	10: // Stop Axis - Will also Gear Out
-		IF VirtualCammedAxis.Stop() THEN
+		IF VirtualCammedAxis.Stop() OR VirtualCammedAxis.Error THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 
 	20: // Stop Axis - Will also Gear Out
-		IF CammedAxis.Stop() THEN
+		IF CammedAxis.Stop() OR CammedAxis.Error THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 

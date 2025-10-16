@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="MainDrive" Id="{26d642ce-310a-47dd-8933-8cfb4c97a9f3}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK MainDrive EXTENDS FB_PackML_BaseModule
 VAR
@@ -31,7 +31,7 @@ CASE SequenceState OF
 		SequenceState		   := SequenceState + 10;
 
 	10: // Stop Axis - Will also Gear Out
-		IF MachineVirtualAxis.Stop() THEN
+		IF MachineVirtualAxis.Stop() OR MachineVirtualAxis.Error THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 

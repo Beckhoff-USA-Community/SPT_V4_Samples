@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="Station4" Id="{385868b0-e0df-4481-b79c-b9d6f1ed6542}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Station4 EXTENDS FB_PackML_BaseModule
 VAR
@@ -41,12 +41,12 @@ CASE SequenceState OF
 		SequenceState		   := SequenceState + 10;
 
 	10: // Stop Axis - Will also Gear Out
-		IF VirtualOffsetMasterAxis.Stop() THEN
+		IF VirtualOffsetMasterAxis.Stop() OR VirtualOffsetMasterAxis.Error THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 
 	20: // Stop Axis - Will also Gear Out
-		IF OffsetAxis.Stop() THEN
+		IF OffsetAxis.Stop() OR OffsetAxis.Error THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 
