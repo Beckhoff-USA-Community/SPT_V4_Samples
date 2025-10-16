@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="VirtualMaster" Id="{e8eb8946-ac6b-4f9a-a349-a2038fff9f99}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK VirtualMaster EXTENDS FB_PackML_BaseModule
 VAR
@@ -8,40 +8,39 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="Aborting" Id="{0ab2a755-f479-4155-bea8-7b1b108018b5}">
+    <Folder Name="Acting States" Id="{1b3bbf81-6014-4558-872c-73b287b2a9c0}" />
+    <Folder Name="Cyclic Logic" Id="{e067bc0f-5da9-44f8-a290-57aaa16f5258}" />
+    <Folder Name="Initialize" Id="{0ba3b703-0794-4a4e-83f2-7d91d9d639a7}" />
+    <Method Name="Aborting" Id="{0ab2a755-f479-4155-bea8-7b1b108018b5}" FolderPath="Acting States\">
       <Declaration><![CDATA[METHOD PROTECTED Aborting]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Mode is ignored
 CASE SequenceState OF
 	0:
-		NoStateTasksToComplete := FALSE;
-		SequenceState		   := SequenceState + 10;
-
-	10: // Stop Axis - Will also Gear Out
-		IF Axis.Stop() THEN
+		// Stop Axis
+		Axis.Override := 100;
+		IF Axis.Stop() OR Axis.Error THEN // This will also GearOut
 			SequenceState := SequenceState + 10;
 		END_IF
 
-	20:
+	10:
 		IF Axis.Stopped THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 
-	30: // Disable Axis 
+	20: // Disable Axis
 		IF Axis.Disable() THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 
-	40:
+	30:
 		IF NOT Axis.Enabled THEN
 			SequenceState := SequenceState + 10;
 		END_IF
 
-	50:
-		StateTasksComplete := TRUE;
-END_CASE
-
-SUPER^.Aborting();]]></ST>
+	40:
+		SUPER^.Aborting();
+END_CASE]]></ST>
       </Implementation>
     </Method>
     <Property Name="AxisRef" Id="{8fbb3c08-11e6-42e9-be14-c11d172359bb}">
@@ -53,7 +52,7 @@ SUPER^.Aborting();]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Method Name="Completing" Id="{3ff898da-49a5-42a9-84dc-dd8eaed69c93}">
+    <Method Name="Completing" Id="{3ff898da-49a5-42a9-84dc-dd8eaed69c93}" FolderPath="Acting States\">
       <Declaration><![CDATA[METHOD PROTECTED Completing]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _CurrentMode OF
@@ -61,30 +60,30 @@ SUPER^.Aborting();]]></ST>
 		CASE SequenceState OF
 			0:
 				NoStateTasksToComplete := FALSE;
-				SequenceState		   := SequenceState + 10;
-
-			10:
 				IF Axis.Stop() THEN
 					SequenceState := SequenceState + 10;
 				END_IF
 
-			20:
+			10:
 				IF Axis.Stopped THEN
 					SequenceState := SequenceState + 10;
 				END_IF
 
-			30:
+			20:
 				StateTasksComplete := TRUE;
 		END_CASE
+
+	E_PMLUnitMode.Maintenance, E_PMLUnitMode.Manual:
+		;
 END_CASE
 
 SUPER^.Completing();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="CyclicLogic" Id="{099d02ae-52c4-4630-a76e-d553625d2bca}">
+    <Method Name="CyclicLogic" Id="{099d02ae-52c4-4630-a76e-d553625d2bca}" FolderPath="Cyclic Logic\">
       <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF NOT InitComplete THEN
+        <ST><![CDATA[IF NOT _InitComplete THEN
 	_InitComplete := Initialize();
 	RETURN;
 END_IF
@@ -92,15 +91,13 @@ END_IF
 SUPER^.CyclicLogic();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Initialize" Id="{6642d997-98c2-45af-8731-ca9c93da577c}">
+    <Method Name="Initialize" Id="{6642d997-98c2-45af-8731-ca9c93da577c}" FolderPath="Initialize\">
       <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
       <Implementation>
         <ST><![CDATA[Initialize := FALSE;
 CASE DescendantSequenceState OF
 	0:
 		RegisterComponent(Axis);
-		_LogModeChanges			:= FALSE;
-		_LogStateChanges		:= FALSE;
 		DescendantSequenceState := DescendantSequenceState + 10;
 
 	10:
@@ -113,7 +110,7 @@ CASE DescendantSequenceState OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Starting" Id="{d700bbd5-4ebd-42aa-9db1-b591835e231d}">
+    <Method Name="Starting" Id="{d700bbd5-4ebd-42aa-9db1-b591835e231d}" FolderPath="Acting States\">
       <Declaration><![CDATA[METHOD PROTECTED Starting]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _CommandedMode OF
@@ -121,19 +118,16 @@ END_CASE]]></ST>
 		CASE SequenceState OF
 			0:
 				NoStateTasksToComplete := FALSE;
-				SequenceState		   := SequenceState + 10;
-
-			10:
 				IF Axis.Enable() THEN
 					SequenceState := SequenceState + 10;
 				END_IF
 
-			20:
+			10:
 				IF Axis.Enabled THEN
 					SequenceState := SequenceState + 10;
 				END_IF
 
-			30:
+			20:
 				StateTasksComplete := TRUE;
 		END_CASE
 END_CASE
@@ -141,7 +135,7 @@ END_CASE
 SUPER^.Starting();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Stopping" Id="{1d286d67-4c20-4caf-b756-9a8f72182cf7}">
+    <Method Name="Stopping" Id="{1d286d67-4c20-4caf-b756-9a8f72182cf7}" FolderPath="Acting States\">
       <Declaration><![CDATA[METHOD PROTECTED Stopping]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _CurrentMode OF
@@ -149,19 +143,16 @@ SUPER^.Starting();]]></ST>
 		CASE SequenceState OF
 			0:
 				NoStateTasksToComplete := FALSE;
-				SequenceState		   := SequenceState + 10;
-
-			10: // Stop Axis - Will also Gear Out
-				IF Axis.Stop() THEN
+				IF Axis.Stop() THEN //This will also GearOut
 					SequenceState := SequenceState + 10;
 				END_IF
 
-			20:
+			10:
 				IF Axis.Stopped THEN
 					SequenceState := SequenceState + 10;
 				END_IF
 
-			30:
+			20:
 				StateTasksComplete := TRUE;
 		END_CASE
 END_CASE

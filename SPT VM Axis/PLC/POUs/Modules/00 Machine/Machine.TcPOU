@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="Machine" Id="{97b13e0f-7ef6-40f4-849d-6d84ce81f8c2}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
 VAR
@@ -10,10 +10,12 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="CyclicLogic" Id="{ebaa3bcd-61fa-4a47-a483-8bcc7204493f}">
+    <Folder Name="Cyclic Logic" Id="{ffaf35dc-5a37-499f-a20e-47e857901962}" />
+    <Folder Name="Initialize" Id="{29c43cb9-63ef-4517-bf07-8c42f1509810}" />
+    <Method Name="CyclicLogic" Id="{ebaa3bcd-61fa-4a47-a483-8bcc7204493f}" FolderPath="Cyclic Logic\">
       <Declaration><![CDATA[METHOD PUBLIC CyclicLogic]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF NOT InitComplete THEN
+        <ST><![CDATA[IF NOT _InitComplete THEN
 	_InitComplete := Initialize();
 	RETURN;
 END_IF
@@ -21,7 +23,7 @@ END_IF
 SUPER^.CyclicLogic();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="HMIPermissions" Id="{02a84cbc-9044-46fc-82ea-ae0aee99ae0f}">
+    <Method Name="HMIPermissions" Id="{02a84cbc-9044-46fc-82ea-ae0aee99ae0f}" FolderPath="Cyclic Logic\">
       <Declaration><![CDATA[// Automatically enables and disables HMI control based on the PackML mode
 METHOD PROTECTED HMIPermissions
 
@@ -30,7 +32,7 @@ METHOD PROTECTED HMIPermissions
         <ST><![CDATA[AllowHMIControl(ThisModuleOnly := TRUE);]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Initialize" Id="{7539f10c-75c9-45c6-b67b-8bf6d3682a5e}">
+    <Method Name="Initialize" Id="{7539f10c-75c9-45c6-b67b-8bf6d3682a5e}" FolderPath="Initialize\">
       <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL;]]></Declaration>
       <Implementation>
         <ST><![CDATA[Initialize := FALSE;
@@ -39,11 +41,9 @@ CASE DescendantSequenceState OF
 		RegisterSubmodule(VirtualMaster);
 		RegisterSubmodule(Unwind);
 		RegisterSubmodule(Draw);
-		_LogModeChanges			:= FALSE;
-		_LogStateChanges		:= FALSE;
 		DescendantSequenceState := DescendantSequenceState + 10;
 
-	10:
+	10: // Assign axis references between Equipment Modules
 		Unwind.MasterAxisRef	REF= VirtualMaster.AxisRef;
 		Draw.MasterAxisRef		REF= VirtualMaster.AxisRef;
 		DescendantSequenceState := DescendantSequenceState + 10;
