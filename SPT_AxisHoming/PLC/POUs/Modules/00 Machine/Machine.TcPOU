@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.12">
-  <POU Name="FB_Machine" Id="{f8df3025-e6cd-4a3e-a29b-8917de0b32ac}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Machine EXTENDS FB_PackML_BaseModule
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="Machine" Id="{f8df3025-e6cd-4a3e-a29b-8917de0b32ac}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
 VAR
 	VAxis	  : FB_Component_BasicAxis := (Name := 'V Axis');
 	AxisHomed : BOOL;
