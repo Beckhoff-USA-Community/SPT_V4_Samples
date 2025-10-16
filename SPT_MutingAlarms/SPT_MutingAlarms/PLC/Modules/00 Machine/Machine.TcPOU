@@ -4,15 +4,14 @@
     <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
 VAR
 	Infeed			 : Infeed := (Name := 'Infeed');
-	_ErrorSeverity	 : INT := 2;
+	_ErrorSeverity	 : INT	  := 2;
 	_WarningSeverity : INT;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
     <Method Name="ChangeAlarmSeverity" Id="{5c4d790f-1818-4583-be7c-2f4ef0cea924}">
-      <Declaration><![CDATA[METHOD ChangeAlarmSeverity
-]]></Declaration>
+      <Declaration><![CDATA[METHOD ChangeAlarmSeverity]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _WarningSeverity OF
 	0:
@@ -38,8 +37,7 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="CyclicLogic" Id="{7aa76925-dfc9-4125-be58-fe4fbc1e0deb}">
-      <Declaration><![CDATA[METHOD CyclicLogic
-]]></Declaration>
+      <Declaration><![CDATA[METHOD CyclicLogic]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF NOT _InitComplete THEN
 	_InitComplete := Initialize();
@@ -53,16 +51,14 @@ SUPER^.CyclicLogic();]]></ST>
     </Method>
     <Method Name="HMIPermissions" Id="{ff8d6508-6554-4fb9-8df8-bc3ed3c8b07d}">
       <Declaration><![CDATA[(* Automatically enables and disables HMI control based on the PackML mode*)
-METHOD PROTECTED HMIPermissions
-]]></Declaration>
+METHOD PROTECTED HMIPermissions]]></Declaration>
       <Implementation>
         <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
       </Implementation>
     </Method>
     <Method Name="Initialize" Id="{c3f85e9e-2439-4e0f-9afb-3d0d0f22b3a8}">
       <Declaration><![CDATA[(* Basic module initialization logic*)
-METHOD PROTECTED Initialize : BOOL
-]]></Declaration>
+METHOD PROTECTED Initialize : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[Initialize := FALSE;
 CASE DescendantSequenceState OF

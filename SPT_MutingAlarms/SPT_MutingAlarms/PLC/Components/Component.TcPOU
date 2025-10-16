@@ -16,8 +16,7 @@ END_VAR]]></Declaration>
       <ST><![CDATA[]]></ST>
     </Implementation>
     <Method Name="ChangeAlarmSeverity" Id="{a3edb0f9-f0d5-4ad0-928e-55bb25bfc45a}">
-      <Declaration><![CDATA[METHOD ChangeAlarmSeverity
-]]></Declaration>
+      <Declaration><![CDATA[METHOD ChangeAlarmSeverity]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _WarningSeverity OF
 	0:
