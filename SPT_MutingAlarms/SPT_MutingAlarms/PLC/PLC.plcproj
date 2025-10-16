@@ -149,6 +149,27 @@
     </PlaceholderReference>
   </ItemGroup>
   <ItemGroup>
+    <PlaceholderResolution Include="SPT Base Types">
+      <Resolution>SPT Base Types, 4.0.3 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Components">
+      <Resolution>SPT Components, 4.0.3 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Diagnostic">
+      <Resolution>SPT Diagnostic, 4.0.1 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT EtherCat">
+      <Resolution>SPT EtherCat, 4.0.1 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Event Logger">
+      <Resolution>SPT Event Logger, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Motion Control">
+      <Resolution>SPT Motion Control, 4.0.2 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Utilities">
+      <Resolution>SPT Utilities, 4.0.2 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
     <PlaceholderResolution Include="System_VisuElemMeter">
       <Resolution>VisuElemMeter, * (System)</Resolution>
     </PlaceholderResolution>
