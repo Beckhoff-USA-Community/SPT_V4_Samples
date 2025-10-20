@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="Machine" Id="{f0bb7911-80d1-477d-8de7-ffb3a7f394bb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
+VAR
+	CamModule_TableSelect : CamModule_TableSelect := (Name := 'Cam Module Table Select');
+	CamModule_UpdateTable : CamModule_UpdateTable := (Name := 'Cam Module Update Table');
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="HMIPermissions" Id="{a511af05-b33e-4341-90d7-f7134d2e90db}">
+      <Declaration><![CDATA[// Automatically enables and disables HMI control based on the PackML mode
+METHOD PROTECTED HMIPermissions
+
+// This method is called cyclically by CyclicLogic()]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{009da281-27b7-48c7-b1db-982fe18ad8aa}">
+      <Declaration><![CDATA[// Basic module initialization logic
+METHOD PROTECTED Initialize : BOOL;
+
+// This method is called by CyclicLogic() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterSubmodule(SubModule := CamModule_TableSelect);
+		RegisterSubmodule(SubModule := CamModule_UpdateTable);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			Initialize := TRUE;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Machine">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="Machine.HMIPermissions">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="Machine.Initialize">
+      <LineId Id="36" Count="10" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

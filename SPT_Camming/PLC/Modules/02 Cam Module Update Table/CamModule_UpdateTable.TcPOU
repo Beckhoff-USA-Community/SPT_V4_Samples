@@ -1,0 +1,584 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <POU Name="CamModule_UpdateTable" Id="{4699f04d-bc8f-4f61-af88-26db80f240bd}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK CamModule_UpdateTable EXTENDS FB_PackML_BaseModule
+VAR
+	CamShaft	  : FB_Component_BasicAxis	  := (Name := 'Cam Shaft');
+	CamFollower	  : FB_Component_CamSlaveAxis := (Name := 'Cam Follower');
+	CamParameters : ST_CamParameters;
+	HMI			  : ST_EM_HMI_UpdateTable;
+	_NextTable	  : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Acting States" Id="{05807c04-9cdb-41c7-9dcb-0a9163dba994}" />
+    <Folder Name="CyclicLogic" Id="{ead8080e-fdbe-462e-b239-4246c90c03ff}" />
+    <Method Name="Aborting" Id="{c67ee904-c8f4-4db8-bfba-8e7a63d1427c}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Aborting
+VAR
+	CamShaftStop	: BOOL;
+	CamFollowerStop : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Mode is ignored
+CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+		// Setting Override to 100 will ensure velocity calculations are not limited
+		CamShaft.Override	 := 100;
+		CamFollower.Override := 100;
+
+		// The below code is used to call the stop method of each axis while still in State 0, this is done for efficeniceny while aborting.
+
+		// Stop all Axes
+		CamShaftStop	:= CamShaft.Stop() OR CamShaft.Error;
+		CamFollowerStop := CamFollower.Stop() OR CamFollower.Error;
+		IF CamShaftStop AND CamFollowerStop THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	10:
+		IF CamShaft.Stopped AND CamFollower.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20: // Disable Axis
+		IF CamShaft.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		IF CamFollower.Disable() THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		IF NOT CamShaft.Enabled AND NOT CamFollower.Enabled THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	50:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Aborting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clearing" Id="{b35772bd-d82a-4785-8496-bb81e09d46e1}" FolderPath="Acting States\">
+      <Declaration><![CDATA[// This method contains code which will execute when this PackML module is in the Clearing state
+METHOD PROTECTED Clearing
+
+// Note: The Clear command can also be thought of as a fault reset depite the ambiguity in the naming of the Reset state. 
+
+// This method is called as required by StateControl()
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Mode is ignored
+CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10: // Reset Axis if Error
+		IF CamShaft.Error THEN
+			IF CamShaft.Reset() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSE
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20:
+		IF CamFollower.InSync THEN
+			IF CamFollower.Stop() THEN // This is used to decouple the axis
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSE
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		IF CamFollower.Error THEN
+			IF CamFollower.Reset() THEN
+				SequenceState := SequenceState + 10;
+			END_IF
+		ELSE
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Clearing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Completing" Id="{0341b919-c35a-4a3a-af49-46ba7110b617}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Completing]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10:
+		IF CamShaft.Stop() THEN // This will also GearOut
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20:
+		IF CamFollower.Stop() THEN // This will also GearOut
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		IF CamShaft.Stopped AND CamFollower.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Completing();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{51b37886-9dfe-4918-b9df-4caf4d98c79c}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[// This method serves as the entry point for all underlying FB logic
+
+// This method should be called cyclically by descendant function blocks by invoking SUPER^.CyclicLogic().  Alternatively, the contents of this method could be reimplemented entirely in which case a call to this method would not be necessary.
+METHOD PUBLIC CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+// HMI Status Update
+HMI.Sts.CurrentTable := CamFollower.RunningTable;
+
+// Change Activation Mode
+IF HMI.Cmd.ChangeMode THEN
+	CASE HMI.Cfg.CamActivationMode OF
+		0:
+			CamParameters.ChangeOptions.ActivationMode := MC_CamActivationMode.MC_CAMACTIVATION_INSTANTANEOUS;
+
+		1:
+			CamParameters.ChangeOptions.ActivationMode := MC_CamActivationMode.MC_CAMACTIVATION_NEXTCYCLE;
+
+		2:
+			CamParameters.ChangeOptions.ActivationMode := MC_CamActivationMode.MC_CAMACTIVATION_ASSOONASPOSSIBLE;
+	END_CASE
+
+	IF CamFollower.ChangeMode() THEN
+		HMI.Cmd.ChangeMode := FALSE;
+	END_IF
+END_IF
+
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{607af143-acc9-4cb2-8cb6-2d6c3226b16d}" FolderPath="Acting States\">
+      <Declaration><![CDATA[// This method contains code which will execute when this PackML module is in the Execute state
+METHOD PROTECTED Execute
+
+(*
+The base implementation of this method is empty. User must override this method to provide functionality.
+This method is called as required by StateControl()
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0: // Start Cam Shaft
+				IF CamShaft.MoveVelocity(50.0, FALSE) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			10: // Checking that the Cam Shaft is near the commanded speed 
+				IF (CamShaft.ActualVelocity > (CamShaft.SetVelocity * 0.9)) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF HMI.Cmd.ChangeTable THEN
+					HMI.Cmd.ChangeTable := FALSE;
+					CASE _NextTable OF
+						1:
+							WriteCamParameters_2();
+							CamFollower.UpdateTable();
+
+						2:
+							WriteCamParameters_1();
+							CamFollower.UpdateTable();
+					END_CASE
+
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30:
+				IF CamFollower.RunningTable = CamFollower.CamParameters.TableSelect THEN
+					SequenceState := 20;
+				END_IF;
+		END_CASE
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{bf09c182-acf5-41e5-b615-7cb74cc1f534}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[// Basic module initialization logic
+METHOD PROTECTED Initialize : BOOL;
+
+// This method is called by CyclicLogic() as required]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(Component := CamShaft);
+		RegisterComponent(Component := CamFollower);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			DescendantSequenceState := DescendantSequenceState + 10;
+		END_IF
+
+	20:
+		// Create the Cam table data and store in CamParameters
+		WriteCamParameters();
+
+		// Set the Reference for the Axis Cam Parameters to the CamParameters
+		CamFollower.CamParameters REF= CamParameters;
+
+		// Setting the Reference of the FB_Component_CamSlaveAxis must be done after the component has been initialized
+		CamFollower.Master REF= CamShaft.Axis;
+
+		//
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	30:
+		Initialize := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Starting" Id="{3b478a9d-3c79-4db4-b46f-63548ae81903}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Starting]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CommandedMode OF
+	E_PMLUnitMode.Production:
+		CASE SequenceState OF
+			0:
+				NoStateTasksToComplete := FALSE;
+				SequenceState		   := SequenceState + 10;
+
+			10: // Enable Axis 
+				IF CamShaft.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			20:
+				IF CamShaft.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			30: // This step is not required, but is used in this demo to ensure the CamShaft starts at 0
+				IF CamShaft.MoveModulo(0.0, MC_Direction.MC_Shortest_Way, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			40:
+				IF NOT CamShaft.Busy THEN
+					IF NOT CamShaft.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			50: // Enable Axis
+				IF CamFollower.Enable() THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			60:
+				IF CamFollower.Enabled THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			70: // This step is not required, but is used in the demo to ensure the follower starts at 0
+				IF CamFollower.MoveAbsolute(0, 0) THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			80:
+				IF NOT CamFollower.Busy THEN
+					IF NOT CamFollower.Error THEN
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			90: // Verify the Master axis is ready 
+				IF CamFollower.Master.Status.Operational THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			100: // Select the Cam Table to be used
+				CamFollower.CamParameters.TableSelect := 3;
+				SequenceState						  := SequenceState + 10;
+
+			110: // Couple to Cam table with Master axis
+				IF CamFollower.WaitingForCommand THEN
+					IF CamFollower.StartSync() THEN // The Start Sync command will move the axes tho the necessary positions and then CamIn
+						SequenceState := SequenceState + 10;
+					END_IF
+				END_IF
+
+			120:
+				IF CamFollower.InSync THEN
+					SequenceState := SequenceState + 10;
+				END_IF
+
+			130:
+				StateTasksComplete := TRUE;
+		END_CASE
+END_CASE
+
+SUPER^.Starting();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stopping" Id="{55a7ea58-d3f9-4def-b9f1-c6dccc988686}" FolderPath="Acting States\">
+      <Declaration><![CDATA[METHOD PROTECTED Stopping]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SequenceState OF
+	0:
+		NoStateTasksToComplete := FALSE;
+		SequenceState		   := SequenceState + 10;
+
+	10:
+		IF CamShaft.Stop() THEN // This will also GearOut 
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	20:
+		IF CamFollower.Stop() THEN // This will also GearOut  
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	30:
+		IF CamShaft.Stopped AND CamFollower.Stopped THEN
+			SequenceState := SequenceState + 10;
+		END_IF
+
+	40:
+		StateTasksComplete := TRUE;
+END_CASE
+
+SUPER^.Stopping();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteCamParameters" Id="{b6e03add-4951-4f5d-a49f-6f89a4134748}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[METHOD WriteCamParameters]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[WriteCamParameters_1();
+_NextTable := 1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteCamParameters_1" Id="{a9a13d7c-f3ff-4a49-b673-d55c2a2fa8bf}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[METHOD WriteCamParameters_1
+VAR
+	PointIdx : UDINT;
+	i		 : UDINT;
+	Start	 : UDINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_NextTable := 1;
+
+// Update Table 1 Data
+CamParameters.CamTableId										:= CamShaft.Axis.NcToPlc.AxisId;
+CamParameters.CamTable[CamParameters.CamTableId].NumberOfPoints := Parameters_MotionControl.CAM_SLAVE_AXIS_MAX_CAM_POINTS;
+PointIdx														:= 0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 0.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_VELOCITY;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 90.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_VELOCITY;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 180.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 10.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 270.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 10.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 360.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+
+// Fill the rest of the table with ignore points
+Start := PointIdx + 1;
+FOR PointIdx := Start TO Parameters_MotionControl.CAM_SLAVE_AXIS_MAX_CAM_POINTS DO
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_NOTDEF;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_IGNORE;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 0.0;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+END_FOR
+
+// Set Lasst Point RelNext to 0
+CamParameters.CamTable[CamParameters.CamTableId].Points[Parameters_MotionControl.CAM_SLAVE_AXIS_MAX_CAM_POINTS].RelIndexNextPoint := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteCamParameters_2" Id="{2c718c45-0ae3-41f0-a329-8475081fa811}" FolderPath="CyclicLogic\">
+      <Declaration><![CDATA[METHOD WriteCamParameters_2
+VAR
+	PointIdx : UDINT;
+	i		 : UDINT;
+	Start	 : UDINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_NextTable := 2;
+
+// Update Table 1 Data
+CamParameters.CamTableId										:= CamShaft.Axis.NcToPlc.AxisId;
+CamParameters.CamTable[CamParameters.CamTableId].NumberOfPoints := Parameters_MotionControl.CAM_SLAVE_AXIS_MAX_CAM_POINTS;
+PointIdx														:= 0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 0.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_VELOCITY;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 90.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_VELOCITY;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 180.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 15.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 270.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 15.0;
+
+//
+PointIdx																			:= PointIdx + 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_POLYNOM5;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_REST;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 360.0;
+CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+
+// Fill the rest of the table with ignore points
+Start := PointIdx + 1;
+FOR PointIdx := Start TO Parameters_MotionControl.CAM_SLAVE_AXIS_MAX_CAM_POINTS DO
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointIndex		:= PointIdx;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].FunctionType		:= MC_MotionFunctionType.MOTIONFUNCTYPE_NOTDEF;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].PointType			:= MC_MotionPointType.MOTIONPOINTTYPE_IGNORE;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].RelIndexNextPoint := 1;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].MasterPos			:= 0.0;
+	CamParameters.CamTable[CamParameters.CamTableId].Points[PointIdx].SlavePos			:= 0.0;
+END_FOR
+
+// Set Lasst Point RelNext to 0
+CamParameters.CamTable[CamParameters.CamTableId].Points[Parameters_MotionControl.CAM_SLAVE_AXIS_MAX_CAM_POINTS].RelIndexNextPoint := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="CamModule_UpdateTable">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Aborting">
+      <LineId Id="88" Count="42" />
+      <LineId Id="44" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Clearing">
+      <LineId Id="76" Count="36" />
+      <LineId Id="38" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Completing">
+      <LineId Id="50" Count="23" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.CyclicLogic">
+      <LineId Id="108" Count="25" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Execute">
+      <LineId Id="184" Count="33" />
+      <LineId Id="37" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Initialize">
+      <LineId Id="88" Count="26" />
+      <LineId Id="33" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Starting">
+      <LineId Id="234" Count="76" />
+      <LineId Id="79" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.Stopping">
+      <LineId Id="50" Count="23" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.WriteCamParameters">
+      <LineId Id="551" Count="0" />
+      <LineId Id="133" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.WriteCamParameters_1">
+      <LineId Id="193" Count="63" />
+      <LineId Id="64" Count="0" />
+    </LineIds>
+    <LineIds Name="CamModule_UpdateTable.WriteCamParameters_2">
+      <LineId Id="194" Count="63" />
+      <LineId Id="65" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

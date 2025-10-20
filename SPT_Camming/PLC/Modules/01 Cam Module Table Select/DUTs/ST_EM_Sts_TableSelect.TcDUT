@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <DUT Name="ST_EM_Sts_TableSelect" Id="{e4a0fc70-885f-422b-9d51-c72c49bc5155}">
+    <Declaration><![CDATA[TYPE ST_EM_Sts_TableSelect :
+	STRUCT
+		CurrentTable : UDINT;
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

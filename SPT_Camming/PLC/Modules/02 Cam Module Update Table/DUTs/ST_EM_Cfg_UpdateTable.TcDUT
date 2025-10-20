@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <DUT Name="ST_EM_Cfg_UpdateTable" Id="{db047278-9dd0-493a-9438-e3d57dea9eb7}">
+    <Declaration><![CDATA[TYPE ST_EM_Cfg_UpdateTable :
+	STRUCT
+		CamActivationMode : INT;
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

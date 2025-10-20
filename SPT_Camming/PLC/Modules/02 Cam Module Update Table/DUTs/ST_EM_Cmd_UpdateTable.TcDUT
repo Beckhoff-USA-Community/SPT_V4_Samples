@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <DUT Name="ST_EM_Cmd_UpdateTable" Id="{cd279b59-7dad-41d5-b05a-803600e3de62}">
+    <Declaration><![CDATA[TYPE ST_EM_Cmd_UpdateTable :
+	STRUCT
+		ChangeTable : BOOL;
+		ChangeMode	: BOOL;
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>
