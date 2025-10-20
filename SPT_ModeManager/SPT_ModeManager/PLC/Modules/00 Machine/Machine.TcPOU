@@ -8,7 +8,8 @@ VAR
 	Outfeed : Outfeed := (Name := 'Outfeed');
 
 	//
-	Machine_HMI : ST_Machine_HMI;
+	Machine_HMI		  : ST_Machine_HMI;
+	CurrentCustomMode : E_PMLCustomMode;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
@@ -20,8 +21,7 @@ VAR
 	aModeNames : ARRAY[E_PMLCustomMode.Invalid..E_PMLCustomMode.Last] OF STRING;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//
-aModeNames[0]  := TO_STRING(E_PMLCustomMode.Invalid);
+        <ST><![CDATA[aModeNames[0]  := TO_STRING(E_PMLCustomMode.Invalid);
 aModeNames[1]  := TO_STRING(E_PMLCustomMode.Production);
 aModeNames[2]  := TO_STRING(E_PMLCustomMode.Maintenance);
 aModeNames[3]  := TO_STRING(E_PMLCustomMode.Manual);
@@ -34,7 +34,8 @@ aModeNames[9]  := TO_STRING(E_PMLCustomMode.Setup);			//UserMode6
 aModeNames[10] := TO_STRING(E_PMLCustomMode.CleanInPlace);	//UserMode7
 aModeNames[11] := TO_STRING(E_PMLCustomMode.DryCycle);		//UserMode8
 aModeNames[12] := TO_STRING(E_PMLCustomMode.Teach);			//UserMode9
-aModeNames[13] := TO_STRING(E_PMLCustomMode.Last);			//UserMode10
+aModeNames[13] := TO_STRING(E_PMLCustomMode.Remote);		//UserMode10
+aModeNames[14] := TO_STRING(E_PMLCustomMode.Last);			//UserMode11
 
 //Default Config for all modes, this is also the default config for Production Mode as defined by Pack ML
 CustomModes.bDisableClearing			   := FALSE;
@@ -64,10 +65,13 @@ FOR i := E_PMLCustomMode.Invalid TO E_PMLCustomMode.Last DO
 	CustomModes(emode := i, sName := aModeNames[i]);
 END_FOR
 
+// Production - Changes for Clean In Place Mode to move from Production.Execute to CleanInPlace.Execute
+CustomModes(eMode := E_PMLCustomMode.Production, sName := 'Production', bEnableUnitModeChangeExecute := TRUE);
+
 //Maintenance Mode default as defined by PackML
 CustomModes(eMode						   := E_PMLCustomMode.Maintenance,
 			sName						   := 'Maintenance',
-			bDisableClearing			   := TRUE,
+			bDisableClearing			   := FALSE,
 			bDisableStarting			   := FALSE,
 			bDisableSuspended			   := TRUE,
 			bDisableStopping			   := FALSE,
@@ -92,7 +96,7 @@ CustomModes(eMode						   := E_PMLCustomMode.Maintenance,
 //Manual Mode default as defined by PackML
 CustomModes(eMode						   := E_PMLCustomMode.Manual,
 			sName						   := 'Manual',
-			bDisableClearing			   := TRUE,
+			bDisableClearing			   := FALSE,
 			bDisableStarting			   := FALSE,
 			bDisableSuspended			   := TRUE,
 			bDisableStopping			   := FALSE,
@@ -114,7 +118,7 @@ CustomModes(eMode						   := E_PMLCustomMode.Manual,
 			bEnableUnitModeChangeHeld	   := FALSE,
 			bEnableUnitModeChangeComplete  := FALSE);
 
-//Home Mode - Configured the same as Production
+//Home Mode - Configured the same as Production as Defined by PackML
 CustomModes(eMode						   := E_PMLCustomMode.Home,
 			sName						   := 'Home',
 			bDisableClearing			   := FALSE,
@@ -174,7 +178,48 @@ CustomModes(eMode						   := E_PMLCustomMode.Last,
 			bEnableUnitModeChangeExecute   := FALSE,
 			bEnableUnitModeChangeAborted   := TRUE,
 			bEnableUnitModeChangeHeld	   := FALSE,
+			bEnableUnitModeChangeComplete  := FALSE);
+
+//Clean In Place - 
+CustomModes(eMode						   := E_PMLCustomMode.CleanInPlace,
+			sName						   := 'Clean In Place',
+			bDisableClearing			   := FALSE,
+			bDisableStarting			   := FALSE,
+			bDisableSuspended			   := FALSE,
+			bDisableStopping			   := FALSE,
+			bDisableAborting			   := FALSE,
+			bDisableHolding				   := TRUE,
+			bDisableHeld				   := TRUE,
+			bDisableUnholding			   := TRUE,
+			bDisableSuspending			   := TRUE,
+			bDisableUnsuspending		   := TRUE,
+			bDisableResetting			   := FALSE,
+			bDisableIdle				   := FALSE,
+			bDisableCompleting			   := FALSE,
+			bDisableComplete			   := FALSE,
+			bEnableUnitModeChangeStopped   := TRUE,
+			bEnableUnitModeChangeIdle	   := TRUE,
+			bEnableUnitModeChangeSuspended := FALSE,
+			bEnableUnitModeChangeExecute   := TRUE,
+			bEnableUnitModeChangeAborted   := TRUE,
+			bEnableUnitModeChangeHeld	   := FALSE,
 			bEnableUnitModeChangeComplete  := FALSE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{5dead088-351e-4366-835b-608c22fc9ff6}">
+      <Declaration><![CDATA[METHOD CyclicLogic
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+CurrentCustomMode := _CurrentMode;
+
+//
+SUPER^.CyclicLogic();]]></ST>
       </Implementation>
     </Method>
     <Method Name="Execute" Id="{6d4ed0e0-aec5-44a1-877e-6b0bcdaf9003}">
@@ -185,7 +230,9 @@ END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE _CurrentMode OF
 	E_PMLCustomMode.Production:
-		;
+		IF Machine_HMI.Status.NeedsCleaning THEN
+			ChangeMode(Mode := E_PMLCustomMode.CleanInPlace);
+		END_IF
 
 	E_PMLCustomMode.Home: //User Mode 1
 		IF Machine_HMI.Command.StartHoming THEN
@@ -194,8 +241,14 @@ END_VAR]]></Declaration>
 			ChangeState(State := E_PMLCommand.Complete);
 		END_IF
 
+	E_PMLCustomMode.SingleCycle:
 	E_PMLCustomMode.Maintenance:
 		;
+
+	E_PMLCustomMode.CleanInPlace:
+		IF Machine_HMI.Status.CleanComplete THEN
+			ChangeMode(Mode := E_PMLCustomMode.Production);
+		END_IF
 
 ELSE
 	;
@@ -213,22 +266,26 @@ METHOD PROTECTED HMIPermissions]]></Declaration>
       <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Idle state*)
 METHOD PROTECTED Idle]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF NOT Machine_HMI.Status.HomeComplete THEN
-	ChangeMode(Mode := E_PMLCustomMode.Home);
-END_IF
-
-CASE _CurrentMode OF
+        <ST><![CDATA[CASE _CurrentMode OF
 	E_PMLCustomMode.Production:
-		;
+		IF NOT Machine_HMI.Status.HomeComplete THEN
+			ChangeMode(Mode := E_PMLCustomMode.Home);
+		END_IF
 
 	E_PMLCustomMode.Home: //User Mode 1
-		;
+		IF Machine_HMI.Status.HomeComplete THEN
+			ChangeMode(Mode := E_PMLCustomMode.Production);
+		END_IF
 
 	E_PMLCustomMode.Maintenance:
 		;
 
-ELSE
-	;
+	E_PMLCustomMode.Manual:
+		;
+
+ELSE // Current Mode not accounted for
+	Trace(Message := CONCAT(TO_STRING(_CurrentMode), ' not handled in state Idle'));
+	ChangeState(State := E_PMLCommand.Abort);
 END_CASE]]></ST>
       </Implementation>
     </Method>

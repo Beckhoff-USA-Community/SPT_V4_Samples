@@ -9,7 +9,7 @@
     <WriteProductVersion>false</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>PLC</Name>
-    <ProgramVersion>3.1.4026.16</ProgramVersion>
+    <ProgramVersion>3.1.4026.19</ProgramVersion>
     <Application>{87ea4926-c13c-42ec-9ede-4a723d9e4162}</Application>
     <TypeSystem>{d5e9b00b-5bda-4c61-b736-87a8911d01ec}</TypeSystem>
     <Implicit_Task_Info>{1f1fe9a0-28f4-4ebd-8499-56ea56717e70}</Implicit_Task_Info>
@@ -22,7 +22,13 @@
     <Compile Include="DUTs\E_PMLCustomMode.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\ST_ModeList.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Modes\FB_CustomModes.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Modules\00 Machine\DUTs\ST_Machine_Command.TcDUT">
@@ -71,6 +77,8 @@
     <Folder Include="Modules\02 Process" />
     <Folder Include="Modules\03 Outfeed" />
     <Folder Include="DUTs" />
+    <Folder Include="Modes" />
+    <Folder Include="Components" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

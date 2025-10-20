@@ -3,9 +3,24 @@
   <POU Name="Outfeed" Id="{281e2777-2c03-497a-82e3-651ecf3118b5}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Outfeed EXTENDS FB_PackML_BaseModule
 VAR
+	CurrentCustomMode : E_PMLCustomMode;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
+    <Method Name="CyclicLogic" Id="{8aa2815e-daa4-4613-ada7-de5e6513f6c5}">
+      <Declaration><![CDATA[METHOD CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+CurrentCustomMode := _CurrentMode;
+
+//
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

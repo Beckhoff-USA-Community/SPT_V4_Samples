@@ -3,9 +3,81 @@
   <POU Name="Infeed" Id="{4745b5cb-9cfa-45ed-bd8a-2d7985365640}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Infeed EXTENDS FB_PackML_BaseModule
 VAR
+	Axis			  : FB_Component_BasicAxis;
+	CurrentCustomMode : E_PMLCustomMode;
+	_Start			  : BOOL;
+	_Stop			  : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
+    <Method Name="CyclicLogic" Id="{7519d259-2509-490d-8b6c-50abe966d07c}">
+      <Declaration><![CDATA[METHOD CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+CurrentCustomMode := _CurrentMode;
+
+//
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{19354046-13fe-46d0-ac6b-eefa763af16d}">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Execute state*)
+METHOD PROTECTED Execute
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLCustomMode.Manual:
+		IF _Stop THEN
+			_Stop := FALSE;
+			ChangeState(State := E_PMLCommand.Stop);
+		END_IF
+
+	E_PMLCustomMode.Production:
+
+	//Waiting for Machine
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Idle" Id="{82adcc64-7594-4398-a5bb-3ac1e36b7f13}">
+      <Declaration><![CDATA[(* This method contains code which will execute when this PackML module is in the Idle state*)
+METHOD PROTECTED Idle
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _CurrentMode OF
+	E_PMLCustomMode.Manual:
+		IF _Start THEN
+			_Start := FALSE;
+			ChangeState(State := E_PMLCommand.Start);
+		END_IF
+
+	E_PMLCustomMode.Production:
+
+	//Waiting for Machine
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{101b1b3d-e0d8-4d03-b495-93ddf5ddb6dd}">
+      <Declaration><![CDATA[(* Basic module initialization logic*)
+METHOD PROTECTED Initialize : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE DescendantSequenceState OF
+	0:
+		RegisterComponent(Axis);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			Initialize := TRUE;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

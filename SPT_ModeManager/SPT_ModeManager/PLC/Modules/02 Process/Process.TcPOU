@@ -3,9 +3,27 @@
   <POU Name="Process" Id="{83f7c65b-5908-4bc0-9481-015c3317f485}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Process EXTENDS FB_PackML_BaseModule
 VAR
+	CurrentCustomMode : E_PMLCustomMode;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
+    <Method Name="CyclicLogic" Id="{3b17b93b-5a6d-4d53-85b6-5a07dcaa6b32}">
+      <Declaration><![CDATA[METHOD CyclicLogic
+VAR
+	_Start : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _InitComplete THEN
+	_InitComplete := Initialize();
+	RETURN;
+END_IF
+
+CurrentCustomMode := _CurrentMode;
+
+//
+SUPER^.CyclicLogic();]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

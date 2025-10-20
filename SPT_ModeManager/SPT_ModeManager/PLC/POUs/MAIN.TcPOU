@@ -6,7 +6,16 @@ VAR
 	Machine : Machine := (Name := 'Machine');
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[Machine.CyclicLogic();]]></ST>
+      <ST><![CDATA[(*All sample code provided by Beckhoff Automation LLC are for illustrative purposes only and are provided “as is” and without any warranties, express or implied. Actual implementations in applications will vary significantly. Beckhoff Automation LLC shall have no liability for, and does not waive any rights in relation to, any code samples that it provides or the use of such code samples for any purpose.*)
+
+(*
+	This sample demonstrates changing mode based on the status of the machine.
+	Specifically on startup, the Machine Status for HomeComplete is FALSE.
+	Therefore in Machine.Idle the mode is changed to Home.
+	When the 'Start command is given the Machine can then Execute its Homing routine, Complete, and then return to Idle.
+	Once back in Idle, the Machine status of HomeComplete will retunr the mode to Production.
+*)
+Machine.CyclicLogic();]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

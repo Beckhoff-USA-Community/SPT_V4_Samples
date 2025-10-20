@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_CustomModes" Id="{adf415e7-2e84-42d2-bc04-506fd4932bc7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_CustomModes EXTENDS FB_CyclicFB IMPLEMENTS I_ModeList
+VAR
+	ModeList : ST_ModeList;
+	ipModes	 : I_ModeList;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Delete" Id="{208f2389-8efe-420a-8652-714c86ec06a8}" />
+    <Method Name="CyclicLogic" Id="{580f8233-4fc4-4e41-88ef-4911d8cabd0c}" FolderPath="Delete\">
+      <Declaration><![CDATA[METHOD CyclicLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_Init" Id="{9ac79d82-2445-47c0-974f-07224475c2ed}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+
+//The return value is not evaluated. For a specific influence, you can also declare the
+
+//methods explicitly and provide additional code there with the standard initialization
+
+//code. You can evaluate the return value.
+METHOD FB_Init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+	bInCopyCode	 : BOOL; // TRUE: the instance will be copied to the copy code afterward (online change)   
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ModeList := ModeNames;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="ModeNames" Id="{f365f8e7-9b8c-457a-8b68-9adea708951a}">
+      <Declaration><![CDATA[PROPERTY ModeNames : REFERENCE TO ST_ModeList]]></Declaration>
+      <Get Name="Get" Id="{090a6601-a2ca-4c1f-9f16-6ce2c71a0eba}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[ModeNames REF= ipModes.ModeNames;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{59866eda-3483-4845-b7a7-1d7f030b514a}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[ModeList := ModeNames;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

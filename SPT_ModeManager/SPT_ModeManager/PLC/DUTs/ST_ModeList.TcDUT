@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_ModeList" Id="{aff92bb5-f432-450b-832f-b0c2cf11547a}">
+    <Declaration><![CDATA[TYPE ST_ModeList :
+	STRUCT
+		// Protected
+		Invalid		: BOOL;
+		Production	: BOOL;
+		Maintenance : BOOL;
+		Manual		: BOOL;
+		// User-Defined
+		Home		  : BOOL;
+		PrePosition	  : BOOL;
+		PreProduction : BOOL;
+		SingleCycle	  : BOOL;
+		SingleStep	  : BOOL;
+		Setup		  : BOOL;
+		CleanInPlace  : BOOL;
+		DryCycle	  : BOOL;
+		Teach		  : BOOL;
+		Remote		  : BOOL;
+		Last		  : BOOL;
+		// Unused
+		UserMode12 : BOOL;
+		UserMode13 : BOOL;
+		UserMode14 : BOOL;
+		UserMode15 : BOOL;
+		UserMode16 : BOOL;
+		UserMode17 : BOOL;
+		UserMode18 : BOOL;
+		UserMode19 : BOOL;
+		UserMode20 : BOOL;
+		UserMode21 : BOOL;
+		UserMode22 : BOOL;
+		UserMode23 : BOOL;
+		UserMode24 : BOOL;
+		UserMode25 : BOOL;
+		UserMode26 : BOOL;
+		UserMode27 : BOOL;
+		UserMode28 : BOOL;
+	END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

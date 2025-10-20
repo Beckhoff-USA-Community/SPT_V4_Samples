@@ -18,8 +18,8 @@ TYPE E_PMLCustomMode : (
 		CleanInPlace  := 10, //User Mode 7
 		DryCycle	  := 11, //User Mode 8
 		Teach		  := 12, //User Mode 9
-		Remote		  := 13,
-		Last		  := 14 //User Mode 10
+		Remote		  := 13, //User Mode 10
+		Last		  := 14	 //User Mode 11
 
 	//E_PMLUnitMode.ePMLUnitMode_UserMode28
 	) DINT;
