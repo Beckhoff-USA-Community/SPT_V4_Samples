@@ -83,41 +83,13 @@
       <DefaultResolution>SPT Components, * (Beckhoff Automation LLC)</DefaultResolution>
       <Namespace>SPT_Components</Namespace>
     </PlaceholderReference>
-    <PlaceholderReference Include="SPT Diagnostic">
-      <DefaultResolution>SPT Diagnostic, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_Diagnostic</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT EtherCat">
-      <DefaultResolution>SPT EtherCat, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_EtherCat</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT Event Logger">
-      <DefaultResolution>SPT Event Logger, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_EventLogger</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT Kinematics">
-      <DefaultResolution>SPT Kinematics, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_Kinematics</Namespace>
-    </PlaceholderReference>
     <PlaceholderReference Include="SPT Motion Control">
       <DefaultResolution>SPT Motion Control, * (Beckhoff Automation LLC)</DefaultResolution>
       <Namespace>SPT_Motion_Control</Namespace>
     </PlaceholderReference>
-    <PlaceholderReference Include="SPT NCI">
-      <DefaultResolution>SPT NCI, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_NCI</Namespace>
-    </PlaceholderReference>
     <PlaceholderReference Include="SPT Utilities">
       <DefaultResolution>SPT Utilities, * (Beckhoff Automation LLC)</DefaultResolution>
       <Namespace>SPT_Utilities</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT Vision">
-      <DefaultResolution>SPT Vision, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_Vision</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SPT XTS">
-      <DefaultResolution>SPT XTS, * (Beckhoff Automation LLC)</DefaultResolution>
-      <Namespace>SPT_XTS</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="System_VisuElemMeter">
       <DefaultResolution>VisuElemMeter, 4.7.0.0 (System)</DefaultResolution>
@@ -183,6 +155,26 @@
     <None Include="PLC.tmc">
       <SubType>Content</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderResolution Include="SPT Base Types">
+      <Resolution>SPT Base Types, 4.0.3 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Components">
+      <Resolution>SPT Components, 4.0.3 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Event Logger">
+      <Resolution>SPT Event Logger, 4.0.0 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Motion Control">
+      <Resolution>SPT Motion Control, 4.0.2 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="SPT Utilities">
+      <Resolution>SPT Utilities, 4.0.2 (Beckhoff Automation LLC)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="Tc3_PackML_V3">
+      <Resolution>Tc3_PackML_V3, * (Beckhoff Automation GmbH)</Resolution>
+    </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>
