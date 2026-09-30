@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.24" ClassName="CTComPlcObjDef">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{18071995-0000-0000-0000-000000000041}" TcBaseType="true" HideSubItems="true" CName="AmsNetId">AMSNETID</Name>
+			<BitSize>48</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+			<Format>
+				<Printf>%d.%d.%d.%d.%d.%d</Printf>
+				<Parameter>[0]</Parameter>
+				<Parameter>[1]</Parameter>
+				<Parameter>[2]</Parameter>
+				<Parameter>[3]</Parameter>
+				<Parameter>[4]</Parameter>
+				<Parameter>[5]</Parameter>
+			</Format>
+		</DataType>
+		<DataType>
+			<Name GUID="{D138CEF2-514B-E0D3-468C-60A8005D07B2}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..9] OF WORD</Name>
+			<BitSize>160</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>10</Elements>
+			</ArrayInfo>
+		</DataType>
+	</DataTypes>
+	<Instance TmcHash="{25C5B087-0248-5313-E780-16CD243C5DDB}">
+		<Vars VarGrpType="1">
+			<Name>PlcTask Inputs</Name>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.EtherCatMaster.AmsNetID</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000041}">AMSNETID</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.EtherCatMaster.DevID</Name>
+				<Type>UINT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.EtherCatMaster.DevState</Name>
+				<Type>UINT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.EtherCatMaster.ChangeCount</Name>
+				<Type>UINT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.EtherCatMaster.SlaveCount</Name>
+				<Type>UINT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.EtherCatMaster.CfgSlaveCount</Name>
+				<Type>UINT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainMaster.FrmXWcState</Name>
+				<Comment><![CDATA[ link to task related ethercat frame state (Frm2WcState)]]></Comment>
+				<Type GUID="{D138CEF2-514B-E0D3-468C-60A8005D07B2}">ARRAY [0..9] OF WORD</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.WcState</Name>
+				<Type>BIT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.ObjectId</Name>
+				<Type>OTCID</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.State</Name>
+				<Type>UINT</Type>
+			</Var>
+			<Var>
+				<Name>MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.SlaveCount</Name>
+				<Type>UINT</Type>
+			</Var>
+		</Vars>
+	</Instance>
+</TcSmItem>

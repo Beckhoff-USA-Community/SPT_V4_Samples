@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="Machine" Id="{7745fd04-c0a6-4561-bef7-9eb9b2075727}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Machine EXTENDS FB_PackML_BaseModule
+VAR
+	// Link EtherCatMaster.* and FrmXWcState[] to the master - see Documentation
+	MainMaster : FB_Component_EtherCatMaster := (Name := 'EtherCAT Main');
+
+	// Link SyncUnitTaskInfo.* to the sync unit. Registers itself with MainMaster, which calls it
+	MainSyncUnit : FB_SyncUnitTask(EtherCatMaster := MainMaster);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+    Machine module. MainMaster is a registered component: its events set
+    CurrentAlarmSeverity, and ParentResponseDefinitions decides the PackML reaction.
+*)
+]]></ST>
+    </Implementation>
+    <Method Name="HMIPermissions" Id="{ae62aa56-73ff-4446-a233-d3ce501fda3c}">
+      <Declaration><![CDATA[(* Automatically enables and disables HMI control based on the PackML mode*)
+METHOD PROTECTED HMIPermissions]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AllowHMIControl(TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Initialize" Id="{f89cb674-ef77-4975-84cc-aaf8763f101e}">
+      <Declaration><![CDATA[METHOD PROTECTED Initialize : BOOL
+VAR
+	Responses : ARRAY[0..4] OF E_AlarmResponse;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Initialize := FALSE;
+
+CASE DescendantSequenceState OF
+	0:
+		// Framework defaults, stated here so there is one obvious place to change the reaction
+		Responses[TcEventSeverity.Verbose]  := E_AlarmResponse.NoResponse;
+		Responses[TcEventSeverity.Info]     := E_AlarmResponse.NoResponse;
+		Responses[TcEventSeverity.Warning]  := E_AlarmResponse.NoResponse;
+		Responses[TcEventSeverity.Error]    := E_AlarmResponse.Abort_ImmediateError;
+		Responses[TcEventSeverity.Critical] := E_AlarmResponse.Abort_ImmediateError;
+		MainMaster.ParentResponseDefinitions := Responses;
+
+		RegisterComponent(Component := MainMaster);
+		DescendantSequenceState := DescendantSequenceState + 10;
+
+	10:
+		IF SUPER^.Initialize() THEN
+			Initialize := TRUE;
+		END_IF
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

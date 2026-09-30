@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.24" ClassName="CTComPlcObjDef">
+	<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" XtvPath="EtherCatDiagnosticsSample\EtherCatDiagnosticsSample Instance.xtv" TmcPath="EtherCatDiagnosticsSample\EtherCatDiagnosticsSample.tmc">
+		<Name>__FILENAME__</Name>
+		<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+		<Contexts>
+			<Context>
+				<Id>0</Id>
+				<Name>PlcTask</Name>
+				<ManualConfig>
+					<OTCID>#x02010030</OTCID>
+				</ManualConfig>
+				<Priority>20</Priority>
+				<CycleTime>10000000</CycleTime>
+			</Context>
+		</Contexts>
+		<JsonDynPous><![CDATA[null]]></JsonDynPous>
+		<TaskPouOids>
+			<TaskPouOid Prio="20" OTCID="#x08502001"/>
+		</TaskPouOids>
+	</Instance>
+	<Mappings>
+		<OwnerA>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)">
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.EtherCatMaster.AmsNetID" VarB="InfoData^AmsNetId"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.EtherCatMaster.CfgSlaveCount" VarB="InfoData^CfgSlaveCount"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.EtherCatMaster.ChangeCount" VarB="InfoData^ChangeCount"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.EtherCatMaster.DevID" VarB="InfoData^DevId"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.EtherCatMaster.DevState" VarB="Inputs^DevState"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.EtherCatMaster.SlaveCount" VarB="Inputs^SlaveCount"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainMaster.FrmXWcState[0]" VarB="Inputs^Frm0WcState"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.ObjectId" VarB="SyncUnits^&lt;default&gt;^&lt;unreferenced&gt;^InfoData^ObjectId"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.SlaveCount" VarB="SyncUnits^&lt;default&gt;^&lt;unreferenced&gt;^InfoData^SlaveCount"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.State" VarB="SyncUnits^&lt;default&gt;^&lt;unreferenced&gt;^InfoData^State"/>
+				<Link VarA="PlcTask Inputs^MAIN.MachineModule.MainSyncUnit.SyncUnitTaskInfo.WcState" VarB="SyncUnits^&lt;default&gt;^&lt;unreferenced&gt;^WcState^WcState"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
+</TcSmItem>
